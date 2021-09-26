@@ -6,10 +6,10 @@ Essa é a aplicação que registra, atualiza ou busca requisições no banco env
 
 | Repositório                                                              | Descrição                          |
 | ------------------------------------------------------------------------ | ---------------------------------- |
-| [onlymotors-docs](https://github.com/doceGraceseCommerce/docesGraces)    | Apresentação e documentação        |
-| [onlymotors-front-web](https://github.com/doceGraceseCommerce/client)    | Aplicação Front-End Web            |
-| [onlymotors-front-mobile](https://github.com/doceGraceseCommerce/client) | Aplicação Front-End Mobile Android |
-| [onlymotors-back](https://github.com/doceGraceseCommerce/server)         | Aplicação Back-End                 |
+| [onlymotors-docs](https://github.com/onlymotors/onlymotors-docs)    | Apresentação e documentação        |
+| [onlymotors-front-web](https://github.com/onlymotors/onlymotors-front-web)    | Aplicação Front-End Web            |
+| [onlymotors-front-mobile](https://github.com/onlymotors/onlymotors-front-mobile) | Aplicação Front-End Mobile Android |
+| [onlymotors-back](https://github.com/onlymotors/onlymotors-back)         | Aplicação Back-End                 |
 
 
 # ⚙️ Instruções de Instalação e Uso
