@@ -1,4 +1,4 @@
-const {Router} = require('express');
+const { Router } = require('express');
 const multer = require('multer');
 
 const authMiddleware = require('./controllers/AuthController')
@@ -10,18 +10,68 @@ const UserController = require('./controllers/UserController');
 const routes = Router();
 const multerConfig = multer();
 
-// Metodo GET - RETORNA TODOS OS ANUNCIOS
-routes.get('/anuncios', AnuncioController.index); 
-// Metodo GET - RETORNA ANUNCIO DE UM UNICO USER
-routes.get('/anuncioByCod_user', authMiddleware, SearchControllers.anuncioByCod_user);
-// Metodo GET - RETORNA ANUNCIO PELO SEU ID
-routes.get('/anuncioById', SearchControllers.anuncioById);
-//metodo POST - CRIAR ANUNCIO 
-routes.post('/add_anuncio', multerConfig.single('file'),authMiddleware, AnuncioController.store);
+// obter todos os anuncios
+// api anuncios
+routes.get('/anuncios', AnuncioController.index);
 
-routes.post('/addUser', UserController.store);
+// obter todos os anuncio de um usuario
+// api anuncioByCod_user
+routes.get('/anuncios/userid', authMiddleware, SearchControllers.anunciosByUserId);
 
-routes.post('/auth', UserController.auth);
- 
+// obter um anuncio
+// api anuncioById
+routes.get('/anuncios/:anuncioId', SearchControllers.anunciosByAnuncioId);
+
+// cadastrar novo anuncio
+// api add_anuncio
+routes.post('/anuncios', multerConfig.single('file'), authMiddleware, AnuncioController.store);
+
+// cadastrar novo usuario
+// api addUser
+routes.post('/users', UserController.store);
+
+// autenticar conta de um usuario
+// api auth
+routes.post('/login', UserController.auth);
+
+// obter um usuario (usuarioid coletado pelo token)
+// api obterUsuarioByUserId
+routes.get('/users/userid', authMiddleware, UserController.getUserByUserId)
+
+// obter nome de um usuario (usuarioid coletado pelo token)
+// api obterNomeUsuarioByUserId
+routes.get('users/userid/nomeuser', authMiddleware)
+
+// excluir um usuario (usuarioid coletado pelo token)
+// api deletarUsuario
+routes.delete('users/userid', authMiddleware)
+
+// alterar todos os campos de um usuario (usuarioid coletado pelo token)
+// api alterarUsuarrio
+routes.patch('users/userid', authMiddleware)
+
+// alterar a senha de um usuario (usuarioid coletado pelo token)
+// api alterarSenhaByUserId
+routes.patch('users/userid/senhauser', authMiddleware)
+
+// excluir um anuncio
+// api excluirAnuncio
+routes.delete('anuncios/:anuncioId', authMiddleware)
+
+// alterar a visibilidade de um anuncio
+// api pausarAnuncio
+routes.patch('anuncios/:anuncioId/statusanuncio', authMiddleware)
+
+// alterar a foto de um anuncio
+// api uploadFoto 
+routes.patch('anuncios/:anuncioId/fotoanuncio', authMiddleware)
+
+// alterar o numero de visitas de um anuncio
+// api registraVisita
+routes.patch('anuncios/:anuncioId/numvisita')
+
+// alterar o numero de contatos de um anuncio
+// api registraContato
+routes.patch('anuncios/:anuncioId/numcontato')
 
 module.exports = routes;

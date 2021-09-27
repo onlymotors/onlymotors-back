@@ -3,33 +3,33 @@ const Schema = mongoose.Schema;
 
 
 const UserSchema = new mongoose.Schema({
-   nome_user:{
+   nomeUser:{
        type:String,
        required:true,
    },
-   apelido_user:{
+   apelidoUser:{
     type:String,
     required:true,
    },
-   cpf_user:{
+   cpfUser:{
     type:Number,
    },
-   cnpj_user:{
+   cnpjUser:{
     type:Number,
    },
-   email_user:{
+   emailUser:{
     type:String,
     required:true,
    },
-   telefone_user:{
+   telefoneUser:{
     type:Number,
     required:true,
    },
-   endereco_user:{
+   enderecoUser:{
     type:String,
     required:true,
    },
-   senha:{
+   senhaUser:{
        type:String,
        required:true,
        select:false,

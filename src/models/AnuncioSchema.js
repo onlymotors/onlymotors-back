@@ -2,31 +2,31 @@ const mongoose = require('mongoose');
 
 //Modelo Doc ANUNCIANTE
 const AnuncioSchema = new mongoose.Schema({
-    nome_fabricante: {
+    nomeFabricante: {
         type: String,
         required: true
     },
-    veiculo_marca: {
+    veiculoMarca: {
         type: String,
         required: true
     },
-    descricao_veiculo: {
+    descricaoVeiculo: {
         type: String,
         required: true
     },
-    ano_fabricacao: {
+    anoFabricacao: {
         type: Number,
         required: true
     },
-    ano_modelo: {
+    anoModelo: {
         type: Number,
         required: true
     },
-    veiculo_valor: {
+    veiculoValor: {
         type: String,
         required: true
     },
-    data_publicacao: {
+    dataPublicacao: {
         type: Date,
         default: Date.now
     },

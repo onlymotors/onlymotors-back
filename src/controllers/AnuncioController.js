@@ -6,7 +6,7 @@ module.exports = {
   //função para retonar todos os anuncios
   async index(request, response) {
     const anuncio = await Anuncio.find().populate('userId');
-    return response.json({ anuncio, "número de registros": anuncio.length });
+    return response.json({ anuncio });
   },
   //função para ler o arquivo csv e salvar no Banco
   async store(request, response) {
@@ -27,45 +27,42 @@ module.exports = {
       for await (let line of anuncioLine) {
         const anuncioLineSplit = line.split(';');
         anuncioArray.push({
-          nome_fabricante: anuncioLineSplit[0],
-          veiculo_marca: anuncioLineSplit[1],
-          descricao_veiculo: anuncioLineSplit[2],
-          cod_user: Number(anuncioLineSplit[3]),
-          ano_fabricacao: Number(anuncioLineSplit[4]),
-          ano_modelo: Number(anuncioLineSplit[5]),
-          cpf_user: Number(anuncioLineSplit[6]),
-          cnpj_user: Number(anuncioLineSplit[7]),
-          veiculo_valor: anuncioLineSplit[8],
+          nomeFabricante: anuncioLineSplit[0],
+          veiculoMarca: anuncioLineSplit[1],
+          descricaoVeiculo: anuncioLineSplit[2],
+          anoFabricacao: Number(anuncioLineSplit[3]),
+          anoModelo: Number(anuncioLineSplit[4]),
+          cpfVeiculo: Number(anuncioLineSplit[5]),
+          cnpjVeiculo: Number(anuncioLineSplit[6]),
+          veiculoValor: anuncioLineSplit[7],
 
         });
       };
 
       for await (let {
-        nome_fabricante,
-        veiculo_marca,
-        descricao_veiculo,
-        cod_user,
-        ano_fabricacao,
-        ano_modelo,
-        cpf_user,
-        cnpj_user,
-        veiculo_valor,
+        nomeFabricante,
+        veiculoMarca,
+        descricaoVeiculo,
+        anoFabricacao,
+        anoModelo,
+        cpfVeiculo,
+        cnpjVeiculo,
+        veiculoValor,
       } of anuncioArray) {
-        
-          await Anuncio.create({
-            nome_fabricante,
-            veiculo_marca,
-            descricao_veiculo,
-            cod_user,
-            ano_fabricacao,
-            ano_modelo,
-            cpf_user,
-            cnpj_user,
-            veiculo_valor,
-            userId: request.userId
-          });
-          return response.send({ message: 'Anúncio(s) cadastrado(s) com sucesso!' })
+
+        await Anuncio.create({
+          nomeFabricante,
+          veiculoMarca,
+          descricaoVeiculo,
+          anoFabricacao,
+          anoModelo,
+          cpfVeiculo,
+          cnpjVeiculo,
+          veiculoValor,
+          userId: request.userId
+        });
       };
+      return response.send({ message: 'Anúncio(s) cadastrado(s) com sucesso!' })
     } catch (e) {
       console.log(e.message)
       return response.send({ message: e.message })
