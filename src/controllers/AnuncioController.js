@@ -3,11 +3,7 @@ const { Readable } = require('stream');
 const readline = require('readline');
 
 module.exports = {
-  //função para retonar todos os anuncios
-  async index(request, response) {
-    const anuncio = await Anuncio.find().populate('userId');
-    return response.json({ anuncio });
-  },
+
   //função para ler o arquivo csv e salvar no Banco
   async store(request, response) {
     try {
@@ -32,9 +28,7 @@ module.exports = {
           descricaoVeiculo: anuncioLineSplit[2],
           anoFabricacao: Number(anuncioLineSplit[3]),
           anoModelo: Number(anuncioLineSplit[4]),
-          cpfVeiculo: Number(anuncioLineSplit[5]),
-          cnpjVeiculo: Number(anuncioLineSplit[6]),
-          veiculoValor: anuncioLineSplit[7],
+          veiculoValor: anuncioLineSplit[6],
 
         });
       };
@@ -45,8 +39,6 @@ module.exports = {
         descricaoVeiculo,
         anoFabricacao,
         anoModelo,
-        cpfVeiculo,
-        cnpjVeiculo,
         veiculoValor,
       } of anuncioArray) {
 
@@ -56,10 +48,13 @@ module.exports = {
           descricaoVeiculo,
           anoFabricacao,
           anoModelo,
-          cpfVeiculo,
-          cnpjVeiculo,
           veiculoValor,
-          userId: request.userId
+          userId: request.userId,
+          statusAnuncio: 1,
+          numVisitas: 0,
+          numContatos: 0,
+          dataPublicacao: Date.now(),
+          dataAlteracao: Date.now()
         });
       };
       return response.send({ message: 'Anúncio(s) cadastrado(s) com sucesso!' })
@@ -67,5 +62,19 @@ module.exports = {
       console.log(e.message)
       return response.send({ message: e.message })
     }
+  },
+
+  async update(request, response) {
+    request.body.dataAlteracao = Date.now();
+    const { anuncioId } = request.params;
+    const anuncio = await Anuncio.findByIdAndUpdate(anuncioId, request.body)
+    return response.json({ anuncio });
+  },
+
+  async delete(request, response) {
+    const { anuncioId } = request.params;
+    const anuncio = await Anuncio.deleteOne(anuncioId)
+    return response.json({ anuncio });
   }
+
 }

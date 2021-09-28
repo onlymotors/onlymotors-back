@@ -2,8 +2,13 @@ const Anuncio = require('../models/AnuncioSchema');
 
 
 module.exports = {
+  //função para retonar todos os anuncios
+  async getAnuncios(request, response) {
+    const anuncio = await Anuncio.find().populate('userId');
+    return response.json({ anuncio });
+  },
   //Retorna todos os anuncios de UM USUARIO
-  async anunciosByUserId(request, response) {
+  async getAnunciosByUserId(request, response) {
     const { userId } = request;
     const anuncio = await Anuncio.find({
       userId: {
@@ -20,7 +25,7 @@ module.exports = {
       });
   },
   //Retorna anuncio pelo seu id
-  async anunciosByAnuncioId(request, response) {
+  async getAnuncioByAnuncioId(request, response) {
     const { anuncioId } = request.params;
     const anuncio = await Anuncio.find({
       _id: {

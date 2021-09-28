@@ -1,26 +1,27 @@
 const jwt = require('jsonwebtoken')
-const authConfig = require('../config/auth.json')
+const authConfig = require('../config/auth.json');
+const TokenService = require('../services/TokenService');
+const User = require('../models/UserSchema');
 
-module.exports = (require, response, next) => {
-    const authHeader = require.headers.authorization;
+module.exports = {
 
-    if (!authHeader)
-        return response.status(401).send({ message: 'Sem token' });
-    const parts = authHeader.split(' ');
+  async auth(request, response) {
+    const { emailUser, senhaUser } = request.body;
+    const user = await User.findOne({ emailUser }).select('+senhaUser');
+    if (!user) {
+      console.log("Nenhum usuário encontrado")
+      return response.status(401).send({ error: 'Nenhum usuário encontrado' })
+    }
+    if (senhaUser != user.senhaUser) {
+      console.log("Senha invalida")
+      return response.status(401).send({ error: 'Senha invalida' });
+    }
+    user.senha = undefined;
 
-    if (!parts.lenght === 2)
-        return response.status(401).send({message:'Token invalido'});
+    response.send({
+      user,
+      token: TokenService.generateToken({ userId: user.id })
+    });
+  }
 
-    const [ scheme, token] = parts;
-
-    if (!/^Bearer$/i.test(scheme))
-        return response.status(401).send({message:'Token mal formado'});
-        
-    jwt.verify(token, authConfig.secret, (err, decoded) => {
-        if(err) return response.status(401).send({message:'Token invalido'});
-
-        require.userId = decoded.userId
-        return next();
-    })    
-    
 };

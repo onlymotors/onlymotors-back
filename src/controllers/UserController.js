@@ -1,55 +1,125 @@
 const User = require('../models/UserSchema');
-const jwt = require('jsonwebtoken');
-
-const authConfig = require('../config/auth.json')
-
-function generateToken(params = {}){
-    return jwt.sign(params, authConfig.secret,{
-        expiresIn: 86400,       
-    })
-}
+const { Readable } = require('stream');
+const readline = require('readline');
+const MascarDados = require('../services/MascararDados');
+const GeradorSenhas = require('../services/GeradorSenhas');
+const Anuncio = require('../models/AnuncioSchema');
 
 module.exports = {
-    async store(request, response){
-        const user = await User.create(request.body);
-        response.send({user,
-        token:generateToken({userId:user.id})
+
+  async store(request, response) {
+    try {
+      const { file } = request;
+      const { buffer } = file;
+
+      const readbleFile = new Readable();
+      readbleFile.push(buffer);
+      readbleFile.push(null);
+
+      const anuncioLine = readline.createInterface({
+        input: readbleFile
+      });
+
+      const anuncioArray = [];
+
+      for await (let line of anuncioLine) {
+        console.log(line)
+        const anuncioLineSplit = line.split(';');
+        console.log(anuncioLineSplit)
+        anuncioArray.push({
+          nomeUser: anuncioLineSplit[0],
+          apelidoUser: anuncioLineSplit[1],
+          cpfUser: Number(anuncioLineSplit[2]),
+          cnpjUser: Number(anuncioLineSplit[3]),
+          telefoneUser: Number(anuncioLineSplit[4]),
+          emailUser: anuncioLineSplit[5]
+
         });
-    },
+      };
 
-    async auth(request, response){
-        const { emailUser, senhaUser} = request.body;
-        const user = await User.findOne({ emailUser }).select('+senhaUser');
-        if(!user) {
-            console.log("Nenhum usuário encontrado")
-            return response.status(401).send({error: 'Nenhum usuário encontrado'})
-        }
-        if(senhaUser != user.senhaUser) {
-            console.log("Senha invalida")
-            return response.status(401).send({error: 'Senha invalida'});
-        }
-        user.senha = undefined; 
-        
-        response.send({user, 
-        token:generateToken({userId:user.id})
-    });
-    },
+      for await (let {
+        nomeUser,
+        apelidoUser,
+        cpfUser,
+        cnpjUser,
+        telefoneUser,
+        emailUser
+      } of anuncioArray) {
 
-    async getUserByUserId(request, response) {
-      const { userId } = request;
-      console.log(userId)
-      const user = await User.find({
-        _id: {
-          $in: userId
+        await User.create({
+          nomeUser,
+          apelidoUser,
+          cpfUser,
+          cnpjUser,
+          telefoneUser,
+          emailUser,
+          senhaUser: GeradorSenhas.gerarSenha(),
+          statusCadastro: 0,
+          dataCadastro: Date.now(),
+          dataAlteracao: Date.now()
+        });
+      };
+      return response.send({ message: 'Usuários(s) cadastrado(s) com sucesso!' })
+    } catch (e) {
+      console.log(e.message)
+      return response.send({ message: e.message })
+    }
+  },
+
+  async update(request, response) {
+    request.body.dataAlteracao = Date.now();
+    const { userId } = request;
+    const user = await User.findByIdAndUpdate(userId, request.body)
+    return response.json({ user });
+  },
+
+  async getUserByUserId(request, response) {
+    const { userId } = request;
+    console.log(userId)
+    const user = await User.find({
+      _id: {
+        $in: userId
+      }
+    }).then((user) => {
+      if (user === []) {
+        return response.json({ message: "Usuário não existe ou não encontrado" })
+      }
+      let usuario = [
+        {
+          nomeUser: user[0].nomeUser,
+          apelidoUser: user[0].apelidoUser,
+          emailUser: user[0].emailUser,
+          enderecoUser: user[0].enderecoUser,
         }
-      }).then((user) => {
-        if (user === []) {
-          return response.json({ message: "Usuário não existe ou não encontrado" })
-        }
+      ]
+      usuario[0].cnpjUser = MascarDados.tratarCnpj(user[0].cnpjUser);
+      usuario[0].cpfUser = MascarDados.tratarCpf(user[0].cpfUser);
+      usuario[0].telefoneUser = MascarDados.tratarTelefone(user[0].telefoneUser);
+      return response.json(usuario);
+    })
+      .catch((err) => {
+        return response.send(err)
+      });
+  },
+
+  async index(request, response) {
+    await User.find().select('+senhaUser')
+      .then((user) => {
         return response.json(user);
       })
-        .catch((err) => {
-          return response.send(err)
-        });
-    }
+  },
+
+  async delete(request, response) {
+    const { userId } = request;
+    let anuncios;
+    await Anuncio.deleteMany({ userId: userId })
+      .then((anuncio) => {
+        anuncios = anuncio
+      })
+    await User.deleteOne({ _id: userId })
+      .then((user) => {
+        return response.json({ user, anuncios });
+      })
+  }
+
 }
