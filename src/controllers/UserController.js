@@ -4,6 +4,8 @@ const readline = require('readline');
 const MascarDados = require('../services/MascararDados');
 const GeradorSenhas = require('../services/GeradorSenhas');
 const Anuncio = require('../models/AnuncioSchema');
+const { sendPasswordEmail } = require('../services/mailer');
+const { gerarSenha } = require('../services/GeradorSenhas');
 
 module.exports = {
 
@@ -23,9 +25,7 @@ module.exports = {
       const anuncioArray = [];
 
       for await (let line of anuncioLine) {
-        console.log(line)
         const anuncioLineSplit = line.split(';');
-        console.log(anuncioLineSplit)
         anuncioArray.push({
           nomeUser: anuncioLineSplit[0],
           apelidoUser: anuncioLineSplit[1],
@@ -45,21 +45,27 @@ module.exports = {
         telefoneUser,
         emailUser
       } of anuncioArray) {
-
-        await User.create({
+        let gerarSenhas = GeradorSenhas.gerarSenha()
+        var user = await User.create({
           nomeUser,
           apelidoUser,
           cpfUser,
           cnpjUser,
           telefoneUser,
           emailUser,
-          senhaUser: GeradorSenhas.gerarSenha(),
+          senhaUser: gerarSenhas,
           statusCadastro: 0,
           dataCadastro: Date.now(),
           dataAlteracao: Date.now()
         });
       };
-      return response.send({ message: 'Usuários(s) cadastrado(s) com sucesso!' })
+      sendPasswordEmail({user: user.nomeUser, email: user.emailUser, senha: user.senhaUser})
+      .then(()=>{
+        return response.send({message:'Mensagem enviada ao email cadastrado !'});
+      }).catch((err) => {
+        return response.send({message:`Erro ao enviar o email ${err}`});
+      })
+      return console.log({message:'Usuário cadastrado(a) com sucesso !'});ws3
     } catch (e) {
       console.log(e.message)
       return response.send({ message: e.message })
@@ -75,7 +81,6 @@ module.exports = {
 
   async getUserByUserId(request, response) {
     const { userId } = request;
-    console.log(userId)
     const user = await User.find({
       _id: {
         $in: userId
@@ -112,11 +117,11 @@ module.exports = {
   async delete(request, response) {
     const { userId } = request;
     let anuncios;
-    await Anuncio.deleteMany({ userId: userId })
+    await Anuncio.deleteMany({ userId: userId})
       .then((anuncio) => {
         anuncios = anuncio
       })
-    await User.deleteOne({ _id: userId })
+    await User.deleteOne({ _id: userId})
       .then((user) => {
         return response.json({ user, anuncios });
       })
