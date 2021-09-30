@@ -45,6 +45,23 @@ $ npm install
 </ul>
 
 <ul>
+<li><b>Criação das Variáveis</b></li>
+<ul>
+<li>Crie uma arquivo .ENV seguindo esses padrão
+<br/>
+
+```bash
+GOOGLE_USER=endereço de email 
+GOOGLE_PASSWORD=senha para o email
+```
+
+</li>
+</ul>
+</ul>
+
+
+
+<ul>
 <li><b>Execute a aplicação</b></li>
 <ul>
 <li>Abra o terminal na raiz desse repositório e execute o comando:
@@ -56,5 +73,8 @@ $ npm start
 
 </li>
 </ul>
+  
+  
 </ul>
+
 
