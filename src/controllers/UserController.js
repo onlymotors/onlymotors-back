@@ -1,10 +1,10 @@
 const User = require('../models/UserSchema');
 const { Readable } = require('stream');
 const readline = require('readline');
-const MascarDados = require('../services/MascararDados');
+const MascararDados = require('../services/MascararDados');
 const GeradorSenhas = require('../services/GeradorSenhas');
 const Anuncio = require('../models/AnuncioSchema');
-const { sendPasswordEmail } = require('../services/mailer');
+const MailerService = require('../services/MailerService');
 const { gerarSenha } = require('../services/GeradorSenhas');
 
 module.exports = {
@@ -45,7 +45,7 @@ module.exports = {
         telefoneUser,
         emailUser
       } of anuncioArray) {
-        let gerarSenhas = GeradorSenhas.gerarSenha()
+        let senha = GeradorSenhas.gerarSenha()
         var user = await User.create({
           nomeUser,
           apelidoUser,
@@ -53,19 +53,14 @@ module.exports = {
           cnpjUser,
           telefoneUser,
           emailUser,
-          senhaUser: gerarSenhas,
-          statusCadastro: 0,
+          senhaUser: senha,
+          statusCadastro: false,
           dataCadastro: Date.now(),
           dataAlteracao: Date.now()
         });
+        MailerService.sendMail({ user: nomeUser, email: emailUser, senha: senha })
       };
-      sendPasswordEmail({user: user.nomeUser, email: user.emailUser, senha: user.senhaUser})
-      .then(()=>{
-        return response.send({message:'Mensagem enviada ao email cadastrado !'});
-      }).catch((err) => {
-        return response.send({message:`Erro ao enviar o email ${err}`});
-      })
-      return console.log({message:'Usuário cadastrado(a) com sucesso !'});ws3
+      return response.send({ message: 'Senha enviada ao email cadastrado!' });
     } catch (e) {
       console.log(e.message)
       return response.send({ message: e.message })
@@ -73,10 +68,24 @@ module.exports = {
   },
 
   async update(request, response) {
+    let chavesProibidas = ["_id", "nomeUser", "apelidoUser", "cpfUser", "cnpjUser",
+      "dataCadastro", "dataAlteracao", "statusCadastro", "__v"]
+    for (let index = 0; index < chavesProibidas.length; index++) {
+      if (chavesProibidas[index] in request.body)
+        return response.json({ message: "Você não possui autorização para alterar esses dados" });
+    }
     request.body.dataAlteracao = Date.now();
+    console.log(request.body.dataAlteracao)
+    if (request.body.enderecoUser)
+      request.body.statusCadastro = true
     const { userId } = request;
-    const user = await User.findByIdAndUpdate(userId, request.body)
-    return response.json({ user });
+    await User.findByIdAndUpdate(userId, request.body)
+      .then(res => {
+        return response.json({ message: "Alterações salvas com sucesso!" });
+      })
+      .catch(e => {
+        return response.json({ message: e.message });
+      })
   },
 
   async getUserByUserId(request, response) {
@@ -97,9 +106,10 @@ module.exports = {
           enderecoUser: user[0].enderecoUser,
         }
       ]
-      usuario[0].cnpjUser = MascarDados.tratarCnpj(user[0].cnpjUser);
-      usuario[0].cpfUser = MascarDados.tratarCpf(user[0].cpfUser);
-      usuario[0].telefoneUser = MascarDados.tratarTelefone(user[0].telefoneUser);
+      usuario[0].cnpjUser = MascararDados.tratarCnpj(user[0].cnpjUser);
+      usuario[0].cpfUser = MascararDados.tratarCpf(user[0].cpfUser);
+      usuario[0].telefoneUser = MascararDados.tratarTelefone(user[0].telefoneUser);
+      usuario[0].enderecoUser.cep = MascararDados.tratarCep(user[0].enderecoUser.cep);
       return response.json(usuario);
     })
       .catch((err) => {
@@ -117,13 +127,16 @@ module.exports = {
   async delete(request, response) {
     const { userId } = request;
     let anuncios;
-    await Anuncio.deleteMany({ userId: userId})
+    await Anuncio.deleteMany({ userId: userId })
       .then((anuncio) => {
         anuncios = anuncio
       })
-    await User.deleteOne({ _id: userId})
+    await User.deleteOne({ _id: userId })
       .then((user) => {
-        return response.json({ user, anuncios });
+        return response.json({ message: `Usuário e ${anuncios.deletedCount} anúncio(s) deletado(s) com sucesso!` });
+      })
+      .catch(e => {
+        return response.json({ message: e.message });
       })
   }
 

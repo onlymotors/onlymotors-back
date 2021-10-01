@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const childSchema = new Schema({
+  name: String
+});
 
 const UserSchema = new mongoose.Schema({
   nomeUser: {
@@ -24,8 +27,13 @@ const UserSchema = new mongoose.Schema({
     required: true,
   },
   enderecoUser: {
-    type: String,
-    required: false,
+    logradouro: String,
+    numero: String,
+    complemento: String,
+    bairro: String,
+    cidade: String,
+    uf: String,
+    cep: String
   },
   emailUser: {
     type: String,
@@ -43,9 +51,9 @@ const UserSchema = new mongoose.Schema({
     type: Date
   },
   statusCadastro: {
-    type: Number,
+    type: Boolean,
     required: true
-  },
+  }
 });
 
 module.exports = mongoose.model('User', UserSchema);

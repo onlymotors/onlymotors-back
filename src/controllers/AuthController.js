@@ -19,7 +19,8 @@ module.exports = {
     user.senha = undefined;
 
     response.send({
-      user,
+      statusCadastro: user.statusCadastro,
+      dataCadastro: user.dataCadastro.toLocaleString(),
       token: TokenService.generateToken({ userId: user.id })
     });
   }
