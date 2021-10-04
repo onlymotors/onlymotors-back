@@ -4,7 +4,7 @@ const Anuncio = require('../models/AnuncioSchema');
 module.exports = {
   //função para retonar todos os anuncios
   async getAnuncios(request, response) {
-    const anuncio = await Anuncio.find().select('-userId');
+    const anuncio = await Anuncio.find({ statusAnuncio: 1 }).select('-userId');
     return response.json({ anuncio });
   },
   //Retorna todos os anuncios de UM USUARIO

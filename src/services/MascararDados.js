@@ -26,9 +26,9 @@ module.exports = {
   },
   tratarCep(cep) {
     cep = cep.toString()
-    cep.replace(/\D/g, "")
+    cep = cep.replace(/\D/g, "")
     cep = cep.padStart(8, "0");
-    cep = cep.substring(0, 5) + "-" + cep.substring(5,)
+    cep = cep.substr(0, 5) + "-" + cep.substr(5, 3)
     return cep
   }
 }

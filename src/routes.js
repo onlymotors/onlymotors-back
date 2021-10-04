@@ -61,16 +61,20 @@ routes.post('/anuncios', multerConfig.single('file'), TokenService.validateToken
 
 // excluir um anuncio
 // api excluirAnuncio
-routes.delete('/anuncios/:anuncioId', TokenService.validateToken, LogService.registrarAcesso)
+routes.delete('/anuncios/:anuncioId', TokenService.validateToken, LogService.registrarAcesso, AnuncioController.delete)
 
 // alterar a visibilidade de um anuncio
 // alterar a foto de um anuncio
-// alterar o numero de visitas de um anuncio
-// alterar o numero de contatos de um anuncio
 // api pausarAnuncio
 // api uploadFoto
-// api registraVisita
-// api registraContato
 routes.patch('/anuncios/:anuncioId', TokenService.validateToken, LogService.registrarAcesso, AnuncioController.update)
+
+// alterar o numero de visitas de um anuncio
+// api registraVisita
+routes.patch('/anuncios/:anuncioId/numvisitas', LogService.registrarAcesso, AnuncioController.registrarVisitas)
+
+// alterar o numero de contatos de um anuncio
+// api registraContato
+routes.patch('/anuncios/:anuncioId/numcontatos', LogService.registrarAcesso, AnuncioController.registrarContatos)
 
 module.exports = routes;

@@ -62,7 +62,6 @@ module.exports = {
       };
       return response.send({ message: 'Senha enviada ao email cadastrado!' });
     } catch (e) {
-      console.log(e.message)
       return response.send({ message: e.message })
     }
   },
@@ -75,10 +74,19 @@ module.exports = {
         return response.json({ message: "Você não possui autorização para alterar esses dados" });
     }
     request.body.dataAlteracao = Date.now();
-    console.log(request.body.dataAlteracao)
-    if (request.body.enderecoUser)
+    if (request.body.enderecoUser && request.body.senhaNova)
       request.body.statusCadastro = true
     const { userId } = request;
+    if (request.body.senhaNova) {
+      await User.findOne({ _id: userId, senhaUser: request.body.senhaAtual })
+        .then(res => {
+          request.body.senhaUser = request.body.senhaNova
+          delete request.body.senhaNova
+        })
+        .catch(e => {
+          return response.json({ message: e.message });
+        })
+    }
     await User.findByIdAndUpdate(userId, request.body)
       .then(res => {
         return response.json({ message: "Alterações salvas com sucesso!" });
@@ -104,12 +112,12 @@ module.exports = {
           apelidoUser: user[0].apelidoUser,
           emailUser: user[0].emailUser,
           enderecoUser: user[0].enderecoUser,
+          statusCadastro: user[0].statusCadastro,
         }
       ]
       usuario[0].cnpjUser = MascararDados.tratarCnpj(user[0].cnpjUser);
       usuario[0].cpfUser = MascararDados.tratarCpf(user[0].cpfUser);
       usuario[0].telefoneUser = MascararDados.tratarTelefone(user[0].telefoneUser);
-      usuario[0].enderecoUser.cep = MascararDados.tratarCep(user[0].enderecoUser.cep);
       return response.json(usuario);
     })
       .catch((err) => {

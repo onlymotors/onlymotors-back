@@ -28,7 +28,7 @@ module.exports = {
           descricaoVeiculo: anuncioLineSplit[2],
           anoFabricacao: Number(anuncioLineSplit[3]),
           anoModelo: Number(anuncioLineSplit[4]),
-          veiculoValor: anuncioLineSplit[6],
+          veiculoValor: anuncioLineSplit[5],
 
         });
       };
@@ -59,22 +59,82 @@ module.exports = {
       };
       return response.send({ message: 'Anúncio(s) cadastrado(s) com sucesso!' })
     } catch (e) {
-      console.log(e.message)
       return response.send({ message: e.message })
     }
   },
 
   async update(request, response) {
+    let chavesProibidas = ["dataPublicacao", "dataAlteracao", "userId"]
+    for (let index = 0; index < chavesProibidas.length; index++) {
+      if (chavesProibidas[index] in request.body)
+        return response.json({ message: "Você não possui autorização para alterar esses dados" });
+    }
     request.body.dataAlteracao = Date.now();
     const { anuncioId } = request.params;
-    const anuncio = await Anuncio.findByIdAndUpdate(anuncioId, request.body)
-    return response.json({ anuncio });
+    if ("statusAnuncio" in request.body) {
+      let dados = {
+        statusAnuncio: request.body.statusAnuncio,
+        dataAlteracao: request.body.dataAlteracao
+      }
+      await Anuncio.findByIdAndUpdate(anuncioId, dados)
+        .then(() => {
+          return response.json({ message: `O anúncio foi ${(dados.statusAnuncio) ? "republicado" : "pausado"}!` });
+        })
+        .catch(e => {
+          return response.json({ message: e.message });
+        })
+    } else {
+      await Anuncio.findByIdAndUpdate(anuncioId, request.body)
+        .then(() => {
+          return response.json({ message: `Alterações salvas com sucesso!` });
+        })
+        .catch(e => {
+          return response.json({ message: e.message });
+        })
+    }
+  },
+
+  async registrarContatos(request, response) {
+    const { anuncioId } = request.params;
+    if (request.body.contagem) {
+      request.body.numContatos = request.body.contagem
+      await Anuncio.findByIdAndUpdate(anuncioId, request.body)
+        .then(() => {
+          return response.json({ message: `Visita registrada com sucesso!` });
+        })
+        .catch(e => {
+          return response.json({ message: e.message });
+        })
+    } else {
+      return response.json({ message: "Você não possui autorização para alterar esses dados" });
+    }
+  },
+
+  async registrarVisitas(request, response) {
+    const { anuncioId } = request.params;
+    if (request.body.contagem) {
+      request.body.numVisitas = request.body.contagem
+      await Anuncio.findByIdAndUpdate(anuncioId, request.body)
+        .then(() => {
+          return response.json({ message: `Visita registrada com sucesso!` });
+        })
+        .catch(e => {
+          return response.json({ message: e.message });
+        })
+    } else {
+      return response.json({ message: "Você não possui autorização para alterar esses dados" });
+    }
   },
 
   async delete(request, response) {
     const { anuncioId } = request.params;
-    const anuncio = await Anuncio.deleteOne(anuncioId)
-    return response.json({ anuncio });
+    await Anuncio.deleteOne({ _id: anuncioId })
+      .then((anuncio) => {
+        return response.json({ message: `Anúncio deletado com sucesso!` });
+      })
+      .catch(e => {
+        return response.json({ message: e.message });
+      })
   }
 
 }
