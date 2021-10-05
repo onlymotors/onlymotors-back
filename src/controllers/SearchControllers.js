@@ -1,5 +1,5 @@
 const Anuncio = require('../models/AnuncioSchema');
-
+const CryptoService = require('../services/CryptoService');
 
 module.exports = {
   //função para retonar todos os anuncios
@@ -35,6 +35,7 @@ module.exports = {
       if (anuncio === []) {
         return response.json({ message: "Anúncio não existe ou não encontrado" })
       }
+      anuncio[0].userId.apelidoUser = CryptoService.descriptografar(anuncio[0].userId.apelidoUser)
       return response.json(anuncio);
     })
       .catch((err) => {

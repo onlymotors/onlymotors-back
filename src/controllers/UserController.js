@@ -5,7 +5,7 @@ const MascararDados = require('../services/MascararDados');
 const GeradorSenhas = require('../services/GeradorSenhas');
 const Anuncio = require('../models/AnuncioSchema');
 const MailerService = require('../services/MailerService');
-const { gerarSenha } = require('../services/GeradorSenhas');
+const CryptoService = require('../services/CryptoService');
 
 module.exports = {
 
@@ -29,9 +29,9 @@ module.exports = {
         anuncioArray.push({
           nomeUser: anuncioLineSplit[0],
           apelidoUser: anuncioLineSplit[1],
-          cpfUser: Number(anuncioLineSplit[2]),
-          cnpjUser: Number(anuncioLineSplit[3]),
-          telefoneUser: Number(anuncioLineSplit[4]),
+          cpfUser: anuncioLineSplit[2],
+          cnpjUser: anuncioLineSplit[3],
+          telefoneUser: anuncioLineSplit[4],
           emailUser: anuncioLineSplit[5]
 
         });
@@ -47,13 +47,13 @@ module.exports = {
       } of anuncioArray) {
         let senha = GeradorSenhas.gerarSenha()
         var user = await User.create({
-          nomeUser,
-          apelidoUser,
-          cpfUser,
-          cnpjUser,
-          telefoneUser,
-          emailUser,
-          senhaUser: senha,
+          nomeUser: CryptoService.criptografar(nomeUser),
+          apelidoUser: CryptoService.criptografar(apelidoUser),
+          cpfUser: CryptoService.criptografar(cpfUser),
+          cnpjUser: CryptoService.criptografar(cnpjUser),
+          telefoneUser: CryptoService.criptografar(telefoneUser),
+          emailUser: emailUser,
+          senhaUser: CryptoService.criptografar(senha),
           statusCadastro: false,
           dataCadastro: Date.now(),
           dataAlteracao: Date.now()
@@ -78,15 +78,22 @@ module.exports = {
       request.body.statusCadastro = true
     const { userId } = request;
     if (request.body.senhaNova) {
-      await User.findOne({ _id: userId, senhaUser: request.body.senhaAtual })
-        .then(res => {
-          request.body.senhaUser = request.body.senhaNova
+      await User.findOne({ _id: userId, senhaUser: CryptoService.criptografar(request.body.senhaAtual) })
+        .then(() => {
+          request.body.senhaUser = CryptoService.criptografar(request.body.senhaNova)
           delete request.body.senhaNova
         })
         .catch(e => {
           return response.json({ message: e.message });
         })
     }
+    request.body.enderecoUser.logradouro = CryptoService.criptografar(request.body.enderecoUser.logradouro)
+    request.body.enderecoUser.numero = CryptoService.criptografar(request.body.enderecoUser.numero)
+    request.body.enderecoUser.complemento = CryptoService.criptografar(request.body.enderecoUser.complemento)
+    request.body.enderecoUser.bairro = CryptoService.criptografar(request.body.enderecoUser.bairro)
+    request.body.enderecoUser.cidade = CryptoService.criptografar(request.body.enderecoUser.cidade)
+    request.body.enderecoUser.uf = CryptoService.criptografar(request.body.enderecoUser.uf)
+    request.body.enderecoUser.cep = CryptoService.criptografar(request.body.enderecoUser.cep)
     await User.findByIdAndUpdate(userId, request.body)
       .then(res => {
         return response.json({ message: "Alterações salvas com sucesso!" });
@@ -106,18 +113,30 @@ module.exports = {
       if (user === []) {
         return response.json({ message: "Usuário não existe ou não encontrado" })
       }
+      let endereco = {}
+      if (!Object.values(user[0].enderecoUser).every(x => x === null || x === '' || x === undefined)) {
+        endereco = {
+          logradouro: CryptoService.descriptografar(user[0].enderecoUser.logradouro),
+          numero: CryptoService.descriptografar(user[0].enderecoUser.numero),
+          complemento: CryptoService.descriptografar(user[0].enderecoUser.complemento),
+          bairro: CryptoService.descriptografar(user[0].enderecoUser.bairro),
+          cidade: CryptoService.descriptografar(user[0].enderecoUser.cidade),
+          uf: CryptoService.descriptografar(user[0].enderecoUser.uf),
+          cep: CryptoService.descriptografar(user[0].enderecoUser.cep)
+        }
+      }
       let usuario = [
         {
-          nomeUser: user[0].nomeUser,
-          apelidoUser: user[0].apelidoUser,
+          nomeUser: CryptoService.descriptografar(user[0].nomeUser),
+          apelidoUser: CryptoService.descriptografar(user[0].apelidoUser),
           emailUser: user[0].emailUser,
-          enderecoUser: user[0].enderecoUser,
+          enderecoUser: endereco,
           statusCadastro: user[0].statusCadastro,
         }
       ]
-      usuario[0].cnpjUser = MascararDados.tratarCnpj(user[0].cnpjUser);
-      usuario[0].cpfUser = MascararDados.tratarCpf(user[0].cpfUser);
-      usuario[0].telefoneUser = MascararDados.tratarTelefone(user[0].telefoneUser);
+      usuario[0].cnpjUser = MascararDados.tratarCnpj(CryptoService.descriptografar(user[0].cnpjUser));
+      usuario[0].cpfUser = MascararDados.tratarCpf(CryptoService.descriptografar(user[0].cpfUser));
+      usuario[0].telefoneUser = MascararDados.tratarTelefone(CryptoService.descriptografar(user[0].telefoneUser));
       return response.json(usuario);
     })
       .catch((err) => {

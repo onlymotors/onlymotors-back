@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const authConfig = require('../config/auth.json')
 
 module.exports = {
 
@@ -17,7 +16,7 @@ module.exports = {
     if (!/^Bearer$/i.test(scheme))
       return response.status(401).send({ message: 'Token mal formado' });
 
-    jwt.verify(token, authConfig.secret, (err, decoded) => {
+    jwt.verify(token, process.env.AUTH_SECRET, (err, decoded) => {
       if (err) return response.status(401).send({ message: 'Token invalido' });
 
       require.userId = decoded.userId
@@ -26,7 +25,7 @@ module.exports = {
   },
 
   generateToken(params = {}) {
-    return jwt.sign(params, authConfig.secret, {
+    return jwt.sign(params, process.env.AUTH_SECRET, {
       expiresIn: 86400,
     })
   }

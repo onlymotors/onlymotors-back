@@ -15,15 +15,15 @@ const UserSchema = new mongoose.Schema({
     required: true,
   },
   cpfUser: {
-    type: Number,
+    type: String,
     required: true,
   },
   cnpjUser: {
-    type: Number,
+    type: String,
     required: true,
   },
   telefoneUser: {
-    type: Number,
+    type: String,
     required: true,
   },
   enderecoUser: {

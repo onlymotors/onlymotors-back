@@ -1,7 +1,6 @@
-const jwt = require('jsonwebtoken')
-const authConfig = require('../config/auth.json');
 const TokenService = require('../services/TokenService');
 const User = require('../models/UserSchema');
+const CryptoService = require('../services/CryptoService');
 
 module.exports = {
 
@@ -12,7 +11,7 @@ module.exports = {
       console.log("Nenhum usuário encontrado")
       return response.status(401).send({ error: 'Nenhum usuário encontrado' })
     }
-    if (senhaUser != user.senhaUser) {
+    if (senhaUser != CryptoService.descriptografar(user.senhaUser)) {
       console.log("Senha invalida")
       return response.status(401).send({ error: 'Senha invalida' });
     }

@@ -26,4 +26,3 @@ app.use('/images', express.static('./src/assets/images'));
 
 //Retornas download armazenados
 app.use('/download', express.static('./src/assets/download'));
-

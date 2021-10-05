@@ -1,3 +1,7 @@
 /node_modules 
 /bdSchema.md
 .env
+/src/config
+/__pycache__
+*.py
+*.sh

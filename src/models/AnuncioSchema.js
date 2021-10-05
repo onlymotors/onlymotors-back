@@ -43,7 +43,7 @@ const AnuncioSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  urlImage:{
+  urlImage: {
     type: String,
   },
   dataPublicacao: {

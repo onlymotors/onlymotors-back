@@ -68,7 +68,7 @@ routes.delete('/anuncios/:anuncioId', TokenService.validateToken, LogService.reg
 // alterar a foto de um anuncio
 // api pausarAnuncio
 // api uploadFoto
-routes.patch('/anuncios/:anuncioId', TokenService.validateToken , multerConfig.single('image'), uploadImage, AnuncioController.update)
+routes.patch('/anuncios/:anuncioId', TokenService.validateToken, LogService.registrarAcesso, multerConfig.single('image'), uploadImage, AnuncioController.update)
 
 // alterar o numero de visitas de um anuncio
 // api registraVisita

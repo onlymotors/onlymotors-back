@@ -56,7 +56,7 @@ module.exports = {
           numContatos: 0,
           dataPublicacao: Date.now(),
           dataAlteracao: Date.now(),
-          urlImage:'',
+          urlImage: '',
         });
       };
       return response.send({ message: 'Anúncio(s) cadastrado(s) com sucesso!' })
@@ -74,7 +74,7 @@ module.exports = {
 
     request.body.dataAlteracao = Date.now();
     const { anuncioId } = request.params;
-    const {urlImage} = request.file ? request.file : '';
+    const { urlImage } = request.file ? request.file : '';
     request.body.urlImage = urlImage;
     if ("statusAnuncio" in request.body) {
       let dados = {
