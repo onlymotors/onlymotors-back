@@ -4,7 +4,6 @@ const cors = require('cors');
 const dbConnection = require('./database/connection');
 const routes = require('./routes');
 const app = express();
-
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('../swagger.json')
 

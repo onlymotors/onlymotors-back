@@ -1,6 +1,7 @@
 const Anuncio = require('../models/AnuncioSchema');
 const { Readable } = require('stream');
 const readline = require('readline');
+const { firestore } = require('firebase-admin');
 
 module.exports = {
 
@@ -54,7 +55,8 @@ module.exports = {
           numVisitas: 0,
           numContatos: 0,
           dataPublicacao: Date.now(),
-          dataAlteracao: Date.now()
+          dataAlteracao: Date.now(),
+          urlImage:'',
         });
       };
       return response.send({ message: 'Anúncio(s) cadastrado(s) com sucesso!' })
@@ -69,8 +71,11 @@ module.exports = {
       if (chavesProibidas[index] in request.body)
         return response.json({ message: "Você não possui autorização para alterar esses dados" });
     }
+
     request.body.dataAlteracao = Date.now();
     const { anuncioId } = request.params;
+    const {urlImage} = request.file ? request.file : '';
+    request.body.urlImage = urlImage;
     if ("statusAnuncio" in request.body) {
       let dados = {
         statusAnuncio: request.body.statusAnuncio,
