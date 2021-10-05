@@ -8,6 +8,7 @@ const SearchControllers = require('./controllers/SearchControllers');
 const UserController = require('./controllers/UserController');
 const AuthController = require('./controllers/AuthController');
 const LogService = require('./services/LogService');
+const uploadImage = require('./services/CloudImageUpload');
 
 const routes = Router();
 const multerConfig = multer();
@@ -67,7 +68,7 @@ routes.delete('/anuncios/:anuncioId', TokenService.validateToken, LogService.reg
 // alterar a foto de um anuncio
 // api pausarAnuncio
 // api uploadFoto
-routes.patch('/anuncios/:anuncioId', TokenService.validateToken, LogService.registrarAcesso, AnuncioController.update)
+routes.patch('/anuncios/:anuncioId', TokenService.validateToken , multerConfig.single('image'), uploadImage, AnuncioController.update)
 
 // alterar o numero de visitas de um anuncio
 // api registraVisita
