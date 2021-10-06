@@ -2,22 +2,49 @@
   "swagger": "2.0",
   "info": {
     "version": "1.0.0",
-    "title": "REST API",
-    "description": ""
+    "title": "Only Motors",
+    "description": "Documentation from Only Motors API's"
   },
-  "host": "localhost:3000",
+  "host": "localhost:3333",
   "basePath": "/",
-  "tags": [],
-  "schemes": [
-    "http"
+  "tags": [
+    {
+      "name": "Users",
+      "description": "Endpoints"
+    },
+    {
+      "name": "Sales",
+      "description": "Endpoints"
+    }
   ],
-  "consumes": [],
-  "produces": [],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "securityDefinitions": {
+    "ApiKeyAuth": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Authorization",
+      "description": "Bearer token authtentication"
+    }
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
   "paths": {
     "/login": {
       "post": {
-        "tags": [],
-        "description": "",
+        "tags": [
+          "Users"
+        ],
+        "description": "Endpoint responsible to login the app.",
+        "consumes": [
+          "application/json"
+        ],
         "parameters": [
           {
             "name": "obj",
@@ -44,42 +71,77 @@
     },
     "/users": {
       "get": {
-        "tags": [],
-        "description": "",
+        "tags": [
+          "Users"
+        ],
+        "description": "Endpoint responsible for searching all existing users in the users collection.",
         "parameters": [],
         "responses": {}
       },
       "post": {
-        "tags": [],
-        "description": "",
-        "parameters": [],
-        "responses": {}
+        "tags": [
+          "Users"
+        ],
+        "description": "Endpoint responsible for from a csv file, register one or multiple users in collection of users.",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "file",
+            "in": "formData",
+            "type": "file",
+            "required": "true",
+            "description": "CSV file containing user data to be registered. The CSV file must be in the expected format."
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
       }
     },
     "/users/userid": {
       "get": {
-        "tags": [],
-        "description": "",
+        "tags": [
+          "Users"
+        ],
+        "description": "Endpoint responsible for searching a user by user_id in the users collection.",
         "parameters": [],
         "responses": {
           "401": {
             "description": "Unauthorized"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       },
       "delete": {
-        "tags": [],
-        "description": "",
+        "tags": [
+          "Users"
+        ],
+        "description": "Endpoint responsible for delete a user and your ads, searching by user_id in the users collection.",
         "parameters": [],
         "responses": {
           "401": {
             "description": "Unauthorized"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       },
       "patch": {
-        "tags": [],
-        "description": "",
+        "tags": [
+          "Users"
+        ],
+        "description": "Endpoint responsible for update the register of a user in the database.",
         "parameters": [
           {
             "name": "obj",
@@ -116,43 +178,90 @@
           "401": {
             "description": "Unauthorized"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     },
     "/anuncios": {
       "get": {
-        "tags": [],
-        "description": "",
-        "parameters": [],
-        "responses": {}
-      },
-      "post": {
-        "tags": [],
-        "description": "",
+        "tags": [
+          "Sales"
+        ],
+        "description": "Endpoint responsible for searching all existing records in the ad collection.",
         "parameters": [],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
+          "200": {
+            "description": "OK"
           }
         }
+      },
+      "post": {
+        "tags": [
+          "Sales"
+        ],
+        "description": "Endpoint responsible for feeding a collection of ads, from a csv file.",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "file",
+            "in": "formData",
+            "type": "file",
+            "required": "true",
+            "description": "CSV file containing vehicle ad data to be registered. The CSV file must be in the expected format."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     },
     "/anuncios/userid": {
       "get": {
-        "tags": [],
-        "description": "",
+        "tags": [
+          "Sales"
+        ],
+        "description": "Endpoint responsible for searching all existing ads from a one user, searching by user_id in the users collection.",
         "parameters": [],
         "responses": {
+          "200": {
+            "description": "OK"
+          },
           "401": {
             "description": "Unauthorized"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     },
     "/anuncios/{anuncioId}": {
       "get": {
-        "tags": [],
-        "description": "",
+        "tags": [
+          "Sales"
+        ],
+        "description": "Endpoint responsible for searching a ad by your respective anuncioID existing in the ad collection.",
         "parameters": [
           {
             "name": "anuncioId",
@@ -161,11 +270,17 @@
             "type": "string"
           }
         ],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
       },
       "delete": {
-        "tags": [],
-        "description": "",
+        "tags": [
+          "Sales"
+        ],
+        "description": "Endpoint responsible for delete a ad from ad colletion, searching by your respective anuncioID existing in the ad collection.",
         "parameters": [
           {
             "name": "anuncioId",
@@ -178,7 +293,12 @@
           "401": {
             "description": "Unauthorized"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       },
       "patch": {
         "tags": [],
@@ -221,8 +341,10 @@
     },
     "/anuncios/{anuncioId}/numvisitas": {
       "patch": {
-        "tags": [],
-        "description": "",
+        "tags": [
+          "Sales"
+        ],
+        "description": "Endpoint responsible for update the register of a visit number in a ad in the ad collection.",
         "parameters": [
           {
             "name": "anuncioId",
@@ -254,8 +376,10 @@
     },
     "/anuncios/{anuncioId}/numcontatos": {
       "patch": {
-        "tags": [],
-        "description": "",
+        "tags": [
+          "Sales"
+        ],
+        "description": "Endpoint responsible for update the register of a contat numbers for one ad in the ad collection.",
         "parameters": [
           {
             "name": "anuncioId",
@@ -286,5 +410,172 @@
       }
     }
   },
-  "definitions": {}
+  "definitions": {
+    "Login": {
+      "type": "object",
+      "properties": {
+        "emailUser": {
+          "type": "string",
+          "example": "emailUser@email.com"
+        },
+        "senhaUser": {
+          "type": "string",
+          "example": "any"
+        }
+      },
+      "required": [
+        "emailUser",
+        "senhaUser"
+      ]
+    },
+    "Update_User": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "example": "615d96f20ba44e99c1b75aa7"
+        },
+        "Json": {
+          "type": "object",
+          "properties": {
+            "dataAlteracao": {
+              "type": "string",
+              "example": "2022-10-06T12:53:54.139+00:00"
+            },
+            "enderecoUser": {
+              "type": "string",
+              "example": "teste"
+            },
+            "senhaNova": {
+              "type": "string",
+              "example": "teste"
+            },
+            "statusCadastro": {
+              "type": "string",
+              "example": "teste"
+            },
+            "senhaAtual": {
+              "type": "string",
+              "example": "Rn7naw7mcf"
+            },
+            "senhaUser": {
+              "type": "string",
+              "example": "Rn7naw7mcf"
+            },
+            "senhaNova_r": {
+              "type": "string",
+              "example": "teste"
+            }
+          }
+        }
+      },
+      "required": [
+        "userId"
+      ]
+    },
+    "Anuncios": {
+      "type": "object",
+      "properties": {
+        "anuncioId": {
+          "type": "string",
+          "example": "615d96f20ba44e99c1b75aa7"
+        }
+      },
+      "required": [
+        "anuncioId"
+      ]
+    },
+    "Update_Anuncio": {
+      "type": "object",
+      "properties": {
+        "anuncioId": {
+          "type": "string",
+          "example": "615d96f20ba44e99c1b75aa7"
+        },
+        "Json": {
+          "type": "object",
+          "properties": {
+            "dataAlteracao": {
+              "type": "string",
+              "example": "2022-10-06T12:53:54.139+00:00"
+            },
+            "statusAnuncio": {
+              "type": "string",
+              "example": "vendido"
+            },
+            "dataAlteracao_r": {
+              "type": "string",
+              "example": "2022-10-06T12:53:54.139+00:00"
+            }
+          },
+          "required": [
+            "dataAlteracao",
+            "statusAnuncio",
+            "dataAlteracao_r"
+          ]
+        }
+      },
+      "required": [
+        "anuncioId"
+      ]
+    },
+    "Num_visitas_Anuncio": {
+      "type": "object",
+      "properties": {
+        "anuncioId": {
+          "type": "string",
+          "example": "615d96f20ba44e99c1b75aa7"
+        },
+        "Json": {
+          "type": "object",
+          "properties": {
+            "contagem": {
+              "type": "string",
+              "example": "1"
+            },
+            "numVisitas": {
+              "type": "string",
+              "example": "2"
+            },
+            "contagem_r": {
+              "type": "string",
+              "example": "3"
+            }
+          }
+        }
+      },
+      "required": [
+        "anuncioId"
+      ]
+    },
+    "Num_contatos_Anuncio": {
+      "type": "object",
+      "properties": {
+        "anuncioId": {
+          "type": "string",
+          "example": "615d96f20ba44e99c1b75aa7"
+        },
+        "Json": {
+          "type": "object",
+          "properties": {
+            "contagem": {
+              "type": "string",
+              "example": "1"
+            },
+            "numContatos": {
+              "type": "string",
+              "example": "2"
+            },
+            "contagem_r": {
+              "type": "string",
+              "example": "3"
+            }
+          }
+        }
+      },
+      "required": [
+        "anuncioId"
+      ]
+    }
+  }
 }
