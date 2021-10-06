@@ -301,7 +301,9 @@
         ]
       },
       "patch": {
-        "tags": [],
+        "tags": [
+          "Sales"
+        ],
         "description": "",
         "parameters": [
           {
@@ -336,7 +338,12 @@
           "401": {
             "description": "Unauthorized"
           }
-        }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
       }
     },
     "/anuncios/{anuncioId}/numvisitas": {

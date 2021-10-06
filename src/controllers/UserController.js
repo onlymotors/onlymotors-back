@@ -60,45 +60,61 @@ module.exports = {
         });
         MailerService.sendMail({ user: nomeUser, email: emailUser, senha: senha })
       };
-      return response.send({ message: 'Senha enviada ao email cadastrado!' });
+      return response.send({ message: 'Senha(s) enviada(s) ao e-mail(s) cadastrado(s)!' });
     } catch (e) {
+      console.log(e.message)
       return response.send({ message: e.message })
     }
   },
 
   async update(request, response) {
-    let chavesProibidas = ["_id", "nomeUser", "apelidoUser", "cpfUser", "cnpjUser",
-      "dataCadastro", "dataAlteracao", "statusCadastro", "__v"]
-    for (let index = 0; index < chavesProibidas.length; index++) {
-      if (chavesProibidas[index] in request.body)
+    let chavesPermitidas = ["telefoneUser", "enderecoUser", "senhaNova", "senhaAtual"]
+    for (let property in request.body) {
+      if (!chavesPermitidas.includes(property)) {
+        console.log("Você não possui autorização para alterar esses dados")
         return response.json({ message: "Você não possui autorização para alterar esses dados" });
+      }
     }
+
+    // let chavesProibidas = ["_id", "nomeUser", "apelidoUser", "cpfUser", "cnpjUser",
+    //   "dataCadastro", "dataAlteracao", "statusCadastro", "__v"]
+    // for (let index = 0; index < chavesProibidas.length; index++) {
+    //   if (chavesProibidas[index] in request.body) {
+    //     console.log("Você não possui autorização para alterar esses dados")
+    //     return response.json({ message: "Você não possui autorização para alterar esses dados" });
+    //   }
+    // }
+
     request.body.dataAlteracao = Date.now();
     if (request.body.enderecoUser && request.body.senhaNova)
       request.body.statusCadastro = true
     const { userId } = request;
-    if (request.body.senhaNova) {
+    if (request.body.senhaNova && request.body.SenhaAtual) {
       await User.findOne({ _id: userId, senhaUser: CryptoService.criptografar(request.body.senhaAtual) })
         .then(() => {
           request.body.senhaUser = CryptoService.criptografar(request.body.senhaNova)
           delete request.body.senhaNova
         })
         .catch(e => {
+          console.log(e.message)
           return response.json({ message: e.message });
         })
     }
-    request.body.enderecoUser.logradouro = CryptoService.criptografar(request.body.enderecoUser.logradouro)
-    request.body.enderecoUser.numero = CryptoService.criptografar(request.body.enderecoUser.numero)
-    request.body.enderecoUser.complemento = CryptoService.criptografar(request.body.enderecoUser.complemento)
-    request.body.enderecoUser.bairro = CryptoService.criptografar(request.body.enderecoUser.bairro)
-    request.body.enderecoUser.cidade = CryptoService.criptografar(request.body.enderecoUser.cidade)
-    request.body.enderecoUser.uf = CryptoService.criptografar(request.body.enderecoUser.uf)
-    request.body.enderecoUser.cep = CryptoService.criptografar(request.body.enderecoUser.cep)
+    if (request.body.enderecoUser) {
+      request.body.enderecoUser.logradouro = CryptoService.criptografar(request.body.enderecoUser.logradouro)
+      request.body.enderecoUser.numero = CryptoService.criptografar(request.body.enderecoUser.numero)
+      request.body.enderecoUser.complemento = CryptoService.criptografar(request.body.enderecoUser.complemento)
+      request.body.enderecoUser.bairro = CryptoService.criptografar(request.body.enderecoUser.bairro)
+      request.body.enderecoUser.cidade = CryptoService.criptografar(request.body.enderecoUser.cidade)
+      request.body.enderecoUser.uf = CryptoService.criptografar(request.body.enderecoUser.uf)
+      request.body.enderecoUser.cep = CryptoService.criptografar(request.body.enderecoUser.cep)
+    }
     await User.findByIdAndUpdate(userId, request.body)
-      .then(res => {
+      .then(() => {
         return response.json({ message: "Alterações salvas com sucesso!" });
       })
       .catch(e => {
+        console.log(e.message)
         return response.json({ message: e.message });
       })
   },
@@ -111,6 +127,7 @@ module.exports = {
       }
     }).then((user) => {
       if (user === []) {
+        console.log("Usuário não existe ou não encontrado")
         return response.json({ message: "Usuário não existe ou não encontrado" })
       }
       let endereco = {}
@@ -139,8 +156,9 @@ module.exports = {
       usuario[0].telefoneUser = MascararDados.tratarTelefone(CryptoService.descriptografar(user[0].telefoneUser));
       return response.json(usuario);
     })
-      .catch((err) => {
-        return response.send(err)
+      .catch(e => {
+        console.log(e.message)
+        return response.send({ message: e.message })
       });
   },
 
@@ -149,20 +167,21 @@ module.exports = {
       .then((user) => {
         return response.json(user);
       })
+      .catch(e => {
+        console.log(e.message)
+        return response.json({ message: e.message });
+      })
   },
 
   async delete(request, response) {
     const { userId } = request;
-    let anuncios;
-    await Anuncio.deleteMany({ userId: userId })
-      .then((anuncio) => {
-        anuncios = anuncio
-      })
+    const anuncios = await Anuncio.deleteMany({ userId: userId })
     await User.deleteOne({ _id: userId })
-      .then((user) => {
+      .then(() => {
         return response.json({ message: `Usuário e ${anuncios.deletedCount} anúncio(s) deletado(s) com sucesso!` });
       })
       .catch(e => {
+        console.log(e.message)
         return response.json({ message: e.message });
       })
   }

@@ -61,22 +61,47 @@ module.exports = {
       };
       return response.send({ message: 'Anúncio(s) cadastrado(s) com sucesso!' })
     } catch (e) {
+      console.log(e.message)
       return response.send({ message: e.message })
     }
   },
 
   async update(request, response) {
-    let chavesProibidas = ["dataPublicacao", "dataAlteracao", "userId"]
-    for (let index = 0; index < chavesProibidas.length; index++) {
-      if (chavesProibidas[index] in request.body)
+    let chavesPermitidas = ["nomeFabricante", "veiculoMarca", "descricaoVeiculo", "anoFabricacao",
+      "anoModelo", "veiculoValor", "statusAnuncio", "urlImage", "deletarFoto"]
+    for (let property in request.body) {
+      if (!chavesPermitidas.includes(property)) {
+        console.log("Você não possui autorização para alterar esses dados")
         return response.json({ message: "Você não possui autorização para alterar esses dados" });
+      }
     }
+
+    // let chavesProibidas = ["dataPublicacao", "dataAlteracao", "userId"]
+    // for (let index = 0; index < chavesProibidas.length; index++) {
+    //   if (chavesProibidas[index] in request.body) {
+    //     console.log("Você não possui autorização para alterar esses dados")
+    //     return response.json({ message: "Você não possui autorização para alterar esses dados" });
+    //   }
+    // }
 
     request.body.dataAlteracao = Date.now();
     const { anuncioId } = request.params;
     const { urlImage } = request.file ? request.file : '';
     request.body.urlImage = urlImage;
-    if ("statusAnuncio" in request.body) {
+    if (request.body.deletarFoto) {
+      let dados = {
+        dataAlteracao: request.body.dataAlteracao
+      }
+      await Anuncio.updateOne({ _id: anuncioId }, { dados, $unset: { urlImage: 1 } })
+        .then((res) => {
+          return response.json({ message: `A foto foi deletada com sucesso!` });
+        })
+        .catch(e => {
+          console.log(e.message)
+          return response.json({ message: e.message });
+        })
+    }
+    else if ("statusAnuncio" in request.body) {
       let dados = {
         statusAnuncio: request.body.statusAnuncio,
         dataAlteracao: request.body.dataAlteracao
@@ -86,6 +111,7 @@ module.exports = {
           return response.json({ message: `O anúncio foi ${(dados.statusAnuncio) ? "republicado" : "pausado"}!` });
         })
         .catch(e => {
+          console.log(e.message)
           return response.json({ message: e.message });
         })
     } else {
@@ -94,6 +120,7 @@ module.exports = {
           return response.json({ message: `Alterações salvas com sucesso!` });
         })
         .catch(e => {
+          console.log(e.message)
           return response.json({ message: e.message });
         })
     }
@@ -108,9 +135,11 @@ module.exports = {
           return response.json({ message: `Visita registrada com sucesso!` });
         })
         .catch(e => {
+          console.log(e.message)
           return response.json({ message: e.message });
         })
     } else {
+      console.log("Você não possui autorização para alterar esses dados")
       return response.json({ message: "Você não possui autorização para alterar esses dados" });
     }
   },
@@ -124,9 +153,11 @@ module.exports = {
           return response.json({ message: `Visita registrada com sucesso!` });
         })
         .catch(e => {
+          console.log(e.message)
           return response.json({ message: e.message });
         })
     } else {
+      console.log("Você não possui autorização para alterar esses dados")
       return response.json({ message: "Você não possui autorização para alterar esses dados" });
     }
   },
@@ -134,10 +165,11 @@ module.exports = {
   async delete(request, response) {
     const { anuncioId } = request.params;
     await Anuncio.deleteOne({ _id: anuncioId })
-      .then((anuncio) => {
+      .then(() => {
         return response.json({ message: `Anúncio deletado com sucesso!` });
       })
       .catch(e => {
+        console.log(e.message)
         return response.json({ message: e.message });
       })
   }

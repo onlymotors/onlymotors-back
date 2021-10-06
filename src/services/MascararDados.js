@@ -24,11 +24,11 @@ module.exports = {
     telefone = `(${telefone.substr(0, 2)}) XXXXX-${telefone.substr(7, 4)}`
     return telefone
   },
-  tratarCep(cep) {
-    cep = cep.toString()
-    cep = cep.replace(/\D/g, "")
-    cep = cep.padStart(8, "0");
-    cep = cep.substr(0, 5) + "-" + cep.substr(5, 3)
-    return cep
-  }
+  // tratarCep(cep) {
+  //   cep = cep.toString()
+  //   cep = cep.replace(/\D/g, "")
+  //   cep = cep.padStart(8, "0");
+  //   cep = cep.substr(0, 5) + "-" + cep.substr(5, 3)
+  //   return cep
+  // }
 }
