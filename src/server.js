@@ -5,7 +5,7 @@ const dbConnection = require('./database/connection');
 const routes = require('./routes');
 const app = express();
 const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./src/swagger.json')
+const swaggerDocument = require('../src/swagger.json')
 
 //Express usando JSON como comunicação 
 app.use(express.json());
