@@ -13,56 +13,149 @@ const uploadImage = require('./services/CloudImageUpload');
 const routes = Router();
 const multerConfig = multer();
 
-// autenticar conta de um usuario
-// api auth
-routes.post('/login', LogService.registrarAcesso, AuthController.auth);
+routes.post('/login', LogService.registrarAcesso, AuthController.auth
+/* 
+    #swagger.tags = ['Users']
+    #swagger.description = 'Endpoint responsible to login the app.'
+    #swagger.consumes = ['application/json']
+    #swagger.required = 'true'
+    #swagger.description = 'Json containing email and user from a user register in the database.'
+
+*/
+);
 
 // ROTA DE TESTE
-// cadastrar novo usuario
-// api addUser
-routes.get('/users', LogService.registrarAcesso, UserController.index);
+routes.get('/users', LogService.registrarAcesso, UserController.index
+/*
+    #swagger.tags = ['Users']
+    #swagger.description = "Endpoint responsible for searching all existing users in the users collection."
+*/
+);
 
-// obter um usuario (usuarioid coletado pelo token)
-// api obterUsuarioByUserId
-// api obterNomeUsuarioByUserId
-routes.get('/users/userid', TokenService.validateToken, LogService.registrarAcesso, UserController.getUserByUserId)
+routes.get('/users/userid', TokenService.validateToken, LogService.registrarAcesso, UserController.getUserByUserId
+/*
+    #swagger.tags = ['Users']
+    #swagger.description = "Endpoint responsible for searching a user by user_id in the users collection."
+    #swagger.security = [{
+        "ApiKeyAuth": []
+    }]
+*/
+)
 
-// cadastrar novo usuario
-// api addUser
-routes.post('/users', LogService.registrarAcesso, multerConfig.single('file'), UserController.store);
+routes.post('/users', LogService.registrarAcesso, multerConfig.single('file'), UserController.store
+/* 
+    #swagger.tags = ['Users']
+    #swagger.description = 'Endpoint responsible for from a csv file, register one or multiple users in collection of users.'
+    #swagger.responses[500] = 'descrption': 'Server error. Possible Cause: Incorrect CSV file template.'
+    #swagger.consumes = ['multipart/form-data'] 
+    #swagger.parameters['file'] = {
+              in: 'formData',
+              type: 'file',
+              required: 'true',
+              description: 'CSV file containing user data to be registered. The CSV file must be in the expected format.'
+        }
+*/
+);
 
-// excluir um usuario (usuarioid coletado pelo token)
-// api deletarUsuario
-routes.delete('/users/userid', TokenService.validateToken, LogService.registrarAcesso, UserController.delete)
+routes.delete('/users/userid', TokenService.validateToken, LogService.registrarAcesso, UserController.delete
+/*
+    #swagger.tags = ['Users']
+    #swagger.description = "Endpoint responsible for delete a user and your ads, searching by user_id in the users collection."
+    #swagger.security = [{
+        "ApiKeyAuth": []
+    }]
+*/
+)
 
-// alterar todos os campos de um usuario (usuarioid coletado pelo token)
-// api alterarUsuarrio
-routes.patch('/users/userid', TokenService.validateToken, LogService.registrarAcesso, UserController.update)
+routes.patch('/users/userid', TokenService.validateToken, LogService.registrarAcesso, UserController.update
+/*
+    #swagger.tags = ['Users']
+    #swagger.description = "Endpoint responsible for update the register of a user in the database."
+    #swagger.security = [{
+        "ApiKeyAuth": []
+    }]
+*/
+)
 
-// alterar a senha de um usuario (usuarioid coletado pelo token)
-// alterar a senha de um usuario (usuarioid coletado pelo token)
-// api alterarSenhaByUserId
-// routes.patch('/users/userid/senhauser', authMiddleware)
+routes.get('/anuncios', LogService.registrarAcesso, SearchControllers.getAnuncios
+/*
+    #swagger.tags = ['Sales']
+    #swagger.description = "Endpoint responsible for searching all existing records in the ad collection."
+    #swagger.responses[200] = 'descrption': 'OK'
+*/
+);
 
-// obter todos os anuncios
-// api anuncios
-routes.get('/anuncios', LogService.registrarAcesso, SearchControllers.getAnuncios);
+routes.get('/anuncios/userid', TokenService.validateToken, LogService.registrarAcesso, SearchControllers.getAnunciosByUserId
+/*
+    #swagger.tags = ['Sales']
+    #swagger.description = "Endpoint responsible for searching all existing ads from a one user, searching by user_id in the users collection."
+    #swagger.responses[200] = 'descrption': 'OK'
+    #swagger.security = [{
+        "ApiKeyAuth": []
+    }]
+*/
+);
 
-// obter todos os anuncio de um usuario
-// api anuncioByCod_user
-routes.get('/anuncios/userid', TokenService.validateToken, LogService.registrarAcesso, SearchControllers.getAnunciosByUserId);
+routes.get('/anuncios/:anuncioId', LogService.registrarAcesso, SearchControllers.getAnuncioByAnuncioId
+/*
+    #swagger.tags = ['Sales']
+    #swagger.description = "Endpoint responsible for searching a ad by your respective anuncioID existing in the ad collection."
+    #swagger.responses[200] = 'descrption': 'OK'
+*/
+);
 
-// obter um anuncio
-// api anuncioById
-routes.get('/anuncios/:anuncioId', LogService.registrarAcesso, SearchControllers.getAnuncioByAnuncioId);
+routes.post('/anuncios', multerConfig.single('file'), TokenService.validateToken, LogService.registrarAcesso, AnuncioController.store
+/* 
+    #swagger.tags = ['Sales']
+    #swagger.description = 'Endpoint responsible for feeding a collection of ads, from a csv file.'
+    #swagger.responses[200] = 'descrption': 'OK'
+    #swagger.responses[500] = 'descrption': 'Server error. Possible Cause: Incorrect CSV file template.'
+    #swagger.consumes = ['multipart/form-data'] 
+    #swagger.parameters['file'] = {
+              in: 'formData',
+              type: 'file',
+              required: 'true',
+              description: 'CSV file containing vehicle ad data to be registered. The CSV file must be in the expected format.'
+        }
+    #swagger.security = [{
+        "ApiKeyAuth": []
+    }]
+*/
+);
 
-// cadastrar novo anuncio
-// api add_anuncio
-routes.post('/anuncios', multerConfig.single('file'), TokenService.validateToken, LogService.registrarAcesso, AnuncioController.store);
+routes.delete('/anuncios/:anuncioId', TokenService.validateToken, LogService.registrarAcesso, AnuncioController.delete
+/*
+    #swagger.tags = ['Sales']
+    #swagger.description = "Endpoint responsible for delete a ad from ad colletion, searching by your respective anuncioID existing in the ad collection."
+    #swagger.security = [{
+        "ApiKeyAuth": []
+    }]
+*/
+);
 
-// excluir um anuncio
-// api excluirAnuncio
-routes.delete('/anuncios/:anuncioId', TokenService.validateToken, LogService.registrarAcesso, AnuncioController.delete)
+routes.patch('/anuncios/:anuncioId', TokenService.validateToken, LogService.registrarAcesso, AnuncioController.update
+/*
+    #swagger.tags = ['Sales']
+    #swagger.description = "Endpoint responsible for update the register of a ad in the ad collection."
+    #swagger.security = [{
+        "ApiKeyAuth": []
+    }]
+*/
+);
+
+routes.patch('/anuncios/:anuncioId/numvisitas', LogService.registrarAcesso, AnuncioController.registrarVisitas
+/*
+    #swagger.tags = ['Sales']
+    #swagger.description = "Endpoint responsible for update the register of a visit number in a ad in the ad collection."
+*/
+);
+
+routes.patch('/anuncios/:anuncioId/numcontatos', LogService.registrarAcesso, AnuncioController.registrarContatos
+/*
+    #swagger.tags = ['Sales']
+    #swagger.description = "Endpoint responsible for update the register of a contat numbers for one ad in the ad collection."
+*/
+);
 
 // alterar a visibilidade de um anuncio
 // alterar a foto de um anuncio
@@ -70,12 +163,14 @@ routes.delete('/anuncios/:anuncioId', TokenService.validateToken, LogService.reg
 // api uploadFoto
 routes.patch('/anuncios/:anuncioId', TokenService.validateToken, LogService.registrarAcesso, multerConfig.single('image'), uploadImage, AnuncioController.update)
 
-// alterar o numero de visitas de um anuncio
-// api registraVisita
-routes.patch('/anuncios/:anuncioId/numvisitas', LogService.registrarAcesso, AnuncioController.registrarVisitas)
 
-// alterar o numero de contatos de um anuncio
-// api registraContato
-routes.patch('/anuncios/:anuncioId/numcontatos', LogService.registrarAcesso, AnuncioController.registrarContatos)
+
+module.exports = routes;
+// alterar a visibilidade de um anuncio
+// alterar a foto de um anuncio
+// api pausarAnuncio
+// api uploadFoto
+routes.patch('/anuncios/:anuncioId', TokenService.validateToken, LogService.registrarAcesso, multerConfig.single('image'), uploadImage, AnuncioController.update)
+
 
 module.exports = routes;
