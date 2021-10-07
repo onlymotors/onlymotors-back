@@ -161,6 +161,9 @@
                 "statusCadastro": {
                   "example": "any"
                 },
+                "SenhaAtual": {
+                  "example": "any"
+                },
                 "senhaAtual": {
                   "example": "any"
                 },
@@ -217,9 +220,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "401": {
             "description": "Unauthorized"
           },
@@ -304,13 +304,22 @@
         "tags": [
           "Sales"
         ],
-        "description": "",
+        "description": "Endpoint responsible for update the register of a ad in the ad collection.",
+        "consumes": [
+          "multipart/form-data"
+        ],
         "parameters": [
           {
             "name": "anuncioId",
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "image",
+            "in": "formData",
+            "type": "file",
+            "description": "Advertised vehicle image."
           },
           {
             "name": "obj",
@@ -324,10 +333,13 @@
                 "urlImage": {
                   "example": "any"
                 },
-                "statusAnuncio": {
+                "deletarFoto": {
                   "example": "any"
                 },
                 "dataAlteracao\r": {
+                  "example": "any"
+                },
+                "statusAnuncio": {
                   "example": "any"
                 }
               }

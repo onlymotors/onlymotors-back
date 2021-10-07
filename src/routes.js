@@ -108,7 +108,6 @@ routes.post('/anuncios', multerConfig.single('file'), TokenService.validateToken
   /* 
       #swagger.tags = ['Sales']
       #swagger.description = 'Endpoint responsible for feeding a collection of ads, from a csv file.'
-      #swagger.responses[200] = 'descrption': 'OK'
       #swagger.responses[500] = 'descrption': 'Server error. Possible Cause: Incorrect CSV file template.'
       #swagger.consumes = ['multipart/form-data'] 
       #swagger.parameters['file'] = {
@@ -137,6 +136,12 @@ routes.patch('/anuncios/:anuncioId', TokenService.validateToken, LogService.regi
   /*
       #swagger.tags = ['Sales']
       #swagger.description = "Endpoint responsible for update the register of a ad in the ad collection."
+      #swagger.consumes = ['multipart/form-data'] 
+      #swagger.parameters['image'] = {
+                in: 'formData',
+                type: 'file',
+                description: 'Advertised vehicle image.'
+          }
       #swagger.security = [{
           "ApiKeyAuth": []
       }]
