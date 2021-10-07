@@ -89,7 +89,7 @@ module.exports = {
     if (request.body.enderecoUser && request.body.senhaNova)
       request.body.statusCadastro = true
     const { userId } = request;
-    if (request.body.senhaNova && request.body.SenhaAtual) {
+    if (request.body.senhaNova) {
       await User.findOne({ _id: userId, senhaUser: CryptoService.criptografar(request.body.senhaAtual) })
         .then(() => {
           request.body.senhaUser = CryptoService.criptografar(request.body.senhaNova)
@@ -108,6 +108,9 @@ module.exports = {
       request.body.enderecoUser.cidade = CryptoService.criptografar(request.body.enderecoUser.cidade)
       request.body.enderecoUser.uf = CryptoService.criptografar(request.body.enderecoUser.uf)
       request.body.enderecoUser.cep = CryptoService.criptografar(request.body.enderecoUser.cep)
+    }
+    if (request.body.telefoneUser) {
+      request.body.telefoneUser = CryptoService.criptografar(request.body.telefoneUser)
     }
     await User.findByIdAndUpdate(userId, request.body)
       .then(() => {
