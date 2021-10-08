@@ -47,13 +47,23 @@ $ npm install
 <ul>
 <li><b>Criação das Variáveis</b></li>
 <ul>
-<li>Crie uma arquivo .ENV seguindo esses padrão
+<li>Crie um arquivo <b>.env</b> e configure as variáveis a seguir:
 <br/>
 
 ```bash
-GOOGLE_USER=endereço de email 
-GOOGLE_PASSWORD=senha para o email
+GOOGLE_USER=endereço_do_gmail 
+GOOGLE_PASSWORD=senha_para_do_gmail_informado
+AUTH_SECRET=chave_para_criação_do_token
+CRYPTO_SECRET=chave_para_criptografar_os_dados
+NODE_TLS_REJECT_UNAUTHORIZED=0
 ```
+
+</li>
+</ul>
+<ul>
+<li>Configure um serviço no Firebase e gere uma chave que deve ser armazenada no seguinte endereço e com o nome: <b>./src/config/onlymotorsConnect.json</b>. Essa chave será utilizada para o serviço de upload de imagens.
+<br/>
+
 
 </li>
 </ul>
