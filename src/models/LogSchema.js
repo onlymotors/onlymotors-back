@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-
 
 const LogSchema = new mongoose.Schema({
   rotaAcesso: {

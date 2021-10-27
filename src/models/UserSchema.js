@@ -1,9 +1,4 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-
-const childSchema = new Schema({
-  name: String
-});
 
 const UserSchema = new mongoose.Schema({
   nomeUser: {
@@ -53,7 +48,11 @@ const UserSchema = new mongoose.Schema({
   statusCadastro: {
     type: Boolean,
     required: true
-  }
+  },
+  chatRooms: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ChatRoom'
+  }]
 });
 
 module.exports = mongoose.model('User', UserSchema);
