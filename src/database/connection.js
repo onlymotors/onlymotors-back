@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 //mongoDB connect
 
 const dbConnection =
-  mongoose.connect('mongodb://localhost:27017/onlyCar')
+  mongoose.connect(process.env.DATABASE_URL)
     .then(() => {
       console.log('Banco conectado com sucesso');
     })
