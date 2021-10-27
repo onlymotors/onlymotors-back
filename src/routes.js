@@ -9,6 +9,7 @@ const UserController = require('./controllers/UserController');
 const AuthController = require('./controllers/AuthController');
 const LogService = require('./services/LogService');
 const uploadImage = require('./services/CloudImageUpload');
+const ChatRoomController = require('./controllers/ChatRoomController');
 
 const routes = Router();
 const multerConfig = multer();
@@ -161,5 +162,10 @@ routes.patch('/anuncios/:anuncioId/numcontatos', LogService.registrarAcesso, Anu
       #swagger.description = "Endpoint responsible for update the register of a contat numbers for one ad in the ad collection."
   */
 );
+
+routes.get('/chatrooms/userid', TokenService.validateToken, LogService.registrarAcesso, ChatRoomController.getChatRoomsByUserId)
+routes.get('/chatrooms/:chatRoomId', TokenService.validateToken, LogService.registrarAcesso, ChatRoomController.getChatRoomByChatRoomId)
+routes.post('/chatrooms/:chatRoomId', TokenService.validateToken, LogService.registrarAcesso, ChatRoomController.storeMensagens)
+routes.post('/chatrooms', TokenService.validateToken, LogService.registrarAcesso, ChatRoomController.store)
 
 module.exports = routes;
