@@ -29,7 +29,7 @@ module.exports = {
           descricaoVeiculo: anuncioLineSplit[2],
           anoFabricacao: Number(anuncioLineSplit[3]),
           anoModelo: Number(anuncioLineSplit[4]),
-          veiculoValor: anuncioLineSplit[5],
+          veiculoValor: Number(anuncioLineSplit[5].replace(".", "").replace(",", ".").replace(/[^\d.-]/g, "")),
 
         });
       };

@@ -23,7 +23,7 @@ const AnuncioSchema = new mongoose.Schema({
     required: true
   },
   veiculoValor: {
-    type: String,
+    type: Number,
     required: true
   },
   userId: {
