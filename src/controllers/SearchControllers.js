@@ -51,5 +51,82 @@ module.exports = {
         console.log(e.message)
         return response.send({ message: e.message })
       });
+  },
+
+  async getAnunciosCollections(request, response) {
+    try {
+      let string = "R$ 16.000,00"
+      string = string.replace(".", "").replace(",", ".").replace(/[^\d.-]/g, "")
+      console.log(Number(string))
+      let marcas = await Anuncio.collection.distinct("veiculoMarca");
+      let modelos = await Anuncio.collection.distinct("descricaoVeiculo");
+      let colecao = await Anuncio.aggregate(
+        [
+          {
+            "$group":
+            {
+              "_id":
+              {
+                veiculoMarca: "$veiculoMarca",
+                descricaoVeiculo: "$descricaoVeiculo"
+              }
+            }
+          }
+        ]
+      )
+      let resCampoBusca = [].concat(marcas);
+      for (let item of colecao) {
+        let combinacao = item._id.veiculoMarca + " " + item._id.descricaoVeiculo
+        resCampoBusca.push(combinacao)
+      }
+      return response.json({ marcas: marcas, modelos: modelos, resCampoBusca: resCampoBusca });
+    } catch (e) {
+      console.log(e.message)
+      return response.send({ message: e.message })
+    }
+  },
+
+  async getAnunciosByFiltros(request, response) {
+    try {
+      let { marca, modelo, ano, valorMinimo, valorMaximo } = request.body
+      // ano = ano.toString()
+      // console.log(typeof (ano))
+      // var query = {
+      //   $or: [{ veiculoMarca: { $regex: marca, $options: 'i' } },
+      //   { descricaoVeiculo: { $regex: modelo, $options: 'i' } }]
+      // }
+      let query;
+      let queryAno;
+      if (valorMaximo > 0) {
+        valorMaximo = valorMaximo
+      } else {
+        valorMaximo = 999999999999999
+      }
+      if (ano !== undefined && ano !== null) {
+        queryAno = '/' + ano + '/.test(this.anoModelo)'
+        query = {
+          $and: [
+            { veiculoMarca: { $regex: marca, $options: 'i' } },
+            { descricaoVeiculo: { $regex: modelo, $options: 'i' } },
+            { anoModelo: ano },
+            { veiculoValor: { $gte: valorMinimo, $lte: valorMaximo } }
+          ]
+        }
+      } else {
+        query = {
+          $and: [
+            { veiculoMarca: { $regex: marca, $options: 'i' } },
+            { descricaoVeiculo: { $regex: modelo, $options: 'i' } },
+            { veiculoValor: { $gte: valorMinimo, $lte: valorMaximo } }
+          ]
+        }
+      }
+      // let anuncios = await Anuncio.find({ $text: { $search: "Volkswagen Gol" } })
+      let anuncios = await Anuncio.find(query)
+      return response.json(anuncios);
+    } catch (e) {
+      console.log(e.message)
+      return response.send({ message: e.message })
+    }
   }
 };

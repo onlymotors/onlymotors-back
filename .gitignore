@@ -5,3 +5,6 @@
 /__pycache__
 *.py
 *.sh
+.dockerignore
+docker-compose.yml
+Dockerfile

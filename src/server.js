@@ -11,7 +11,9 @@ const ChatService = require('./services/ChatService');
 //Express usando JSON como comunicação 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+  origin: "*"
+}));
 //Usando o arquivo de rotas
 app.use(routes);
 //conectar ao banco de Dados

@@ -167,5 +167,7 @@ routes.get('/chatrooms/userid', TokenService.validateToken, LogService.registrar
 routes.get('/chatrooms/:chatRoomId', TokenService.validateToken, LogService.registrarAcesso, ChatRoomController.getChatRoomByChatRoomId)
 routes.post('/chatrooms/:chatRoomId', TokenService.validateToken, LogService.registrarAcesso, ChatRoomController.storeMensagens)
 routes.post('/chatrooms', TokenService.validateToken, LogService.registrarAcesso, ChatRoomController.store)
+routes.get('/search/colecoes', LogService.registrarAcesso, SearchControllers.getAnunciosCollections)
+routes.get('/search', LogService.registrarAcesso, SearchControllers.getAnunciosByFiltros)
 
 module.exports = routes;
