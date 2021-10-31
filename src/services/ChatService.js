@@ -1,19 +1,19 @@
 const TokenService = require('./TokenService');
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 
-let clientSocketIds = [];
-let connectedUsers = [];
+// let clientSocketIds = [];
+// let connectedUsers = [];
 
-const getSocketByUserId = (userId) => {
-  let socket = '';
-  for (let i = 0; i < clientSocketIds.length; i++) {
-    if (clientSocketIds[i].userId == userId) {
-      socket = clientSocketIds[i].socket;
-      break;
-    }
-  }
-  return socket;
-}
+// const getSocketByUserId = (userId) => {
+//   let socket = '';
+//   for (let i = 0; i < clientSocketIds.length; i++) {
+//     if (clientSocketIds[i].userId == userId) {
+//       socket = clientSocketIds[i].socket;
+//       break;
+//     }
+//   }
+//   return socket;
+// }
 
 
 module.exports = (server) => {
@@ -46,16 +46,16 @@ module.exports = (server) => {
     // next()
   });
 
-  io.of("/chat").adapter.on("join-room", (room, id) => {
-    // console.log(`usuario: ${id} entrou na room: ${room}`);
-  });
-  io.of("/chat").adapter.on("leave-room", (room, id) => {
-    // console.log(`usuario: ${id} deixou a room: ${room}`);
-  });
+  // io.of("/chat").adapter.on("join-room", (room, id) => {
+  // console.log(`usuario: ${id} entrou na room: ${room}`);
+  // });
+  // io.of("/chat").adapter.on("leave-room", (room, id) => {
+  // console.log(`usuario: ${id} deixou a room: ${room}`);
+  // });
 
 
   chat.on('connection', socket => {
-    let socketRoom;
+    // let socketRoom;
 
     console.log(`Connected: ${socket.id}`);
     socket.on('disconnect', () =>
@@ -63,13 +63,13 @@ module.exports = (server) => {
     socket.on('join', (room) => {
       console.log(`Socket ${socket.id} joining ${room}`);
       socket.join(room);
-      socketRoom = room;
+      // socketRoom = room;
     });
     socket.on('chat', (data) => {
-      console.log(data)
+      // console.log(data)
       const { mensagem, room } = data;
       console.log(`msg: ${mensagem}, room: ${room}`);
-      chat.to(socketRoom).emit('chat', data);
+      chat.to(room).emit('chat', data);
     });
 
 

@@ -57,7 +57,6 @@ module.exports = {
     try {
       let string = "R$ 16.000,00"
       string = string.replace(".", "").replace(",", ".").replace(/[^\d.-]/g, "")
-      console.log(Number(string))
       let marcas = await Anuncio.collection.distinct("veiculoMarca");
       let modelos = await Anuncio.collection.distinct("descricaoVeiculo");
       let colecao = await Anuncio.aggregate(
@@ -88,45 +87,104 @@ module.exports = {
 
   async getAnunciosByFiltros(request, response) {
     try {
-      let { marca, modelo, ano, valorMinimo, valorMaximo } = request.body
-      // ano = ano.toString()
-      // console.log(typeof (ano))
-      // var query = {
-      //   $or: [{ veiculoMarca: { $regex: marca, $options: 'i' } },
-      //   { descricaoVeiculo: { $regex: modelo, $options: 'i' } }]
+      let { palavras, marca, modelo, ano, valorMinimo, valorMaximo } = request.query
+      ano = Number(ano)
+      valorMinimo = Number(valorMinimo.replace(/\D/g, ""))
+      valorMaximo = Number(valorMaximo.replace(/\D/g, ""))
+      // console.log(valorMinimo)
+      // console.log(valorMaximo)
+      // let listaPalavras = palavras.split(" ")
+      // let regex
+      // let queryPalavras
+      // if (listaPalavras.length > 1) {
+      // regex = listaPalavras.join("|")
+      // queryPalavras = {
+      //   $and: [
+      //     { veiculoMarca: { $regex: regex, $options: 'i' } },
+      //     { descricaoVeiculo: { $regex: regex, $options: 'i' } },
+      //   ]
       // }
-      let query;
-      let queryAno;
+      // } else {
+      // queryPalavras = {
+      //   $or: [
+      //     { veiculoMarca: { $regex: palavras, $options: 'i' } },
+      //     { descricaoVeiculo: { $regex: palavras, $options: 'i' } },
+      //   ]
+      // }
+      // }
       if (valorMaximo > 0) {
         valorMaximo = valorMaximo
       } else {
         valorMaximo = 999999999999999
       }
-      if (ano !== undefined && ano !== null) {
+      let query;
+      let queryAno;
+      if (ano !== 0) {
         queryAno = '/' + ano + '/.test(this.anoModelo)'
         query = {
-          $and: [
-            { veiculoMarca: { $regex: marca, $options: 'i' } },
-            { descricaoVeiculo: { $regex: modelo, $options: 'i' } },
-            { anoModelo: ano },
-            { veiculoValor: { $gte: valorMinimo, $lte: valorMaximo } }
-          ]
+          $and:
+            [
+              { veiculoMarca: { $regex: marca, $options: 'i' } },
+              { descricaoVeiculo: { $regex: modelo, $options: 'i' } },
+              { anoModelo: ano },
+              { veiculoValor: { $gte: valorMinimo, $lte: valorMaximo } },
+              // { queryPalavras }
+            ]
         }
       } else {
         query = {
-          $and: [
-            { veiculoMarca: { $regex: marca, $options: 'i' } },
-            { descricaoVeiculo: { $regex: modelo, $options: 'i' } },
-            { veiculoValor: { $gte: valorMinimo, $lte: valorMaximo } }
-          ]
+          $and:
+            [
+              { veiculoMarca: { $regex: marca, $options: 'i' } },
+              { descricaoVeiculo: { $regex: modelo, $options: 'i' } },
+              { veiculoValor: { $gte: valorMinimo, $lte: valorMaximo } },
+              // { queryPalavras }
+            ]
         }
       }
+      // console.log(request.query)
+      // console.log(query)
       // let anuncios = await Anuncio.find({ $text: { $search: "Volkswagen Gol" } })
       let anuncios = await Anuncio.find(query)
-      return response.json(anuncios);
+      // console.log("Res:", anuncios.length)
+      return response.json({ anuncio: anuncios });
     } catch (e) {
       console.log(e.message)
       return response.send({ message: e.message })
     }
-  }
+  },
+
+  async getAnunciosByPalavrasBuscadas(request, response) {
+    try {
+      let { palavras } = request.params
+      let listaPalavras = palavras.split(" ")
+      let regex
+      let query
+      if (listaPalavras.length > 1) {
+        regex = listaPalavras.join("|")
+        query = {
+          $and: [
+            { veiculoMarca: { $regex: regex, $options: 'i' } },
+            { descricaoVeiculo: { $regex: regex, $options: 'i' } },
+          ]
+        }
+      } else {
+        query = {
+          $or: [
+            { veiculoMarca: { $regex: palavras, $options: 'i' } },
+            { descricaoVeiculo: { $regex: palavras, $options: 'i' } },
+          ]
+        }
+      }
+      // console.log(request.params)
+      // console.log(query)
+      let anuncios = await Anuncio.find(query)
+      // console.log("Res:", anuncios.length)
+      return response.json({ anuncio: anuncios });
+    } catch (e) {
+      console.log(e.message)
+      return response.send({ message: e.message })
+    }
+  },
+
 };
