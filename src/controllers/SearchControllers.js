@@ -128,6 +128,7 @@ module.exports = {
               { descricaoVeiculo: { $regex: modelo, $options: 'i' } },
               { anoModelo: ano },
               { veiculoValor: { $gte: valorMinimo, $lte: valorMaximo } },
+              { statusAnuncio: 1 }
               // { queryPalavras }
             ]
         }
@@ -138,6 +139,7 @@ module.exports = {
               { veiculoMarca: { $regex: marca, $options: 'i' } },
               { descricaoVeiculo: { $regex: modelo, $options: 'i' } },
               { veiculoValor: { $gte: valorMinimo, $lte: valorMaximo } },
+              { statusAnuncio: 1 }
               // { queryPalavras }
             ]
         }
