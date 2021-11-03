@@ -56,6 +56,7 @@ GOOGLE_PASSWORD=senha_para_do_gmail_informado
 AUTH_SECRET=chave_para_criação_do_token
 CRYPTO_SECRET=chave_para_criptografar_os_dados
 NODE_TLS_REJECT_UNAUTHORIZED=0
+DATABASE_URL=endereço_do_banco
 ```
 
 </li>
