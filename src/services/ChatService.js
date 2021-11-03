@@ -34,9 +34,14 @@ module.exports = (server) => {
     let res = {
 
     }
+    // let require = {
+    //   headers: {
+    //     authorization: socket.handshake.headers.authorization
+    //   }
+    // }
     let require = {
       headers: {
-        authorization: socket.handshake.headers.authorization
+        authorization: socket.handshake.query.token
       }
     }
 
