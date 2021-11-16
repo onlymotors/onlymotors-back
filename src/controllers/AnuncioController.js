@@ -136,7 +136,7 @@ module.exports = {
             anuncio.primeiroContato = Date.now()
           }
           anuncio.numContatos = request.body.contagem
-          console.log(anuncio)
+          // console.log(anuncio)
           anuncio.save()
           return response.json({ message: `Visita registrada com sucesso!` });
         })
@@ -160,7 +160,7 @@ module.exports = {
             anuncio.primeiraVisita = Date.now()
           }
           anuncio.numVisitas = request.body.contagem
-          console.log(anuncio)
+          // console.log(anuncio)
           anuncio.save()
           return response.json({ message: `Visita registrada com sucesso!` });
         })

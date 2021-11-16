@@ -4,33 +4,49 @@ const CryptoService = require('../services/CryptoService');
 module.exports = {
   //função para retonar todos os anuncios
   async getAnuncios(request, response) {
-    const anuncio = await Anuncio.find({ statusAnuncio: 1 }).select('-userId')
-      .then((anuncio) => {
+    try {
+      const { pular, limitar, contar } = request.query
+      console.log(request.query)
+      const anuncio = await Anuncio.find({ statusAnuncio: 1 }).select('-userId').limit(Number(limitar)).skip(Number(pular))
+      if (!contar) {
         return response.json({ anuncio });
-      })
-      .catch(e => {
-        console.log(e.message)
-        return response.send({ message: e.message })
-      });
+      } else {
+        const numAnuncios = await Anuncio.countDocuments({ statusAnuncio: 1 })
+        return response.json({ anuncio, numAnuncios });
+      }
+    } catch (e) {
+      console.log(e.message)
+      return response.send({ message: e.message })
+    }
   },
   //Retorna todos os anuncios de UM USUARIO
   async getAnunciosByUserId(request, response) {
-    const { userId } = request;
-    const anuncio = await Anuncio.find({
-      userId: {
-        $in: userId
-      }
-    }).select('-userId').then((anuncio) => {
+    try {
+      const { userId } = request;
+      const { pular, limitar, contar } = request.query
+      console.log(request.query)
+      const anuncio = await Anuncio.find({
+        userId: {
+          $in: userId
+        }
+      }).select('-userId').limit(Number(limitar)).skip(Number(pular))
       if (anuncio === []) {
         console.log("Usuário não existe ou não tem anuncios criados")
         return response.json({ message: "Usuário não existe ou não tem anuncios criados" })
+      } else if (!contar) {
+        return response.json({ anuncio });
+      } else {
+        const numAnuncios = await Anuncio.countDocuments({
+          userId: {
+            $in: userId
+          }
+        })
+        return response.json({ anuncio, numAnuncios });
       }
-      return response.json({ anuncio });
-    })
-      .catch(e => {
-        console.log(e.message)
-        return response.send({ message: e.message })
-      });
+    } catch (e) {
+      console.log(e.message)
+      return response.send({ message: e.message })
+    }
   },
   //Retorna anuncio pelo seu id
   async getAnuncioByAnuncioId(request, response) {
@@ -87,7 +103,9 @@ module.exports = {
 
   async getAnunciosByFiltros(request, response) {
     try {
-      let { palavras, marca, modelo, ano, valorMinimo, valorMaximo } = request.query
+      let { marca, modelo, ano, valorMinimo, valorMaximo, pular, limitar, contar } = request.query
+      console.log(request.query)
+      contar = (contar === "true")
       ano = Number(ano)
       valorMinimo = Number(valorMinimo.replace(/\D/g, ""))
       valorMaximo = Number(valorMaximo.replace(/\D/g, ""))
@@ -147,9 +165,14 @@ module.exports = {
       // console.log(request.query)
       // console.log(query)
       // let anuncios = await Anuncio.find({ $text: { $search: "Volkswagen Gol" } })
-      let anuncios = await Anuncio.find(query)
+      let anuncios = await Anuncio.find(query).limit(Number(limitar)).skip(Number(pular))
       // console.log("Res:", anuncios.length)
-      return response.json({ anuncio: anuncios });
+      if (!contar) {
+        return response.json({ anuncio: anuncios });
+      } else {
+        let numAnuncios = await Anuncio.countDocuments(query)
+        return response.json({ anuncio: anuncios, numAnuncios });
+      }
     } catch (e) {
       console.log(e.message)
       return response.send({ message: e.message })
@@ -159,6 +182,10 @@ module.exports = {
   async getAnunciosByPalavrasBuscadas(request, response) {
     try {
       let { palavras } = request.params
+      let { pular, limitar, contar } = request.query
+      console.log(request.query)
+      contar = (contar === "true")
+      console.log(contar)
       let listaPalavras = palavras.split(" ")
       let regex
       let query
@@ -180,9 +207,14 @@ module.exports = {
       }
       // console.log(request.params)
       // console.log(query)
-      let anuncios = await Anuncio.find(query)
+      let anuncios = await Anuncio.find(query).limit(Number(limitar)).skip(Number(pular))
       // console.log("Res:", anuncios.length)
-      return response.json({ anuncio: anuncios });
+      if (!contar) {
+        return response.json({ anuncio: anuncios });
+      } else {
+        let numAnuncios = await Anuncio.countDocuments(query)
+        return response.json({ anuncio: anuncios, numAnuncios });
+      }
     } catch (e) {
       console.log(e.message)
       return response.send({ message: e.message })
