@@ -10,6 +10,7 @@ const AuthController = require('./controllers/AuthController');
 const LogService = require('./services/LogService');
 const uploadImage = require('./services/CloudImageUpload');
 const ChatRoomController = require('./controllers/ChatRoomController');
+const RelatorioController = require('./controllers/RelatorioController');
 
 const routes = Router();
 const multerConfig = multer();
@@ -170,5 +171,7 @@ routes.post('/chatrooms', TokenService.validateToken, LogService.registrarAcesso
 routes.get('/search/colecoes', LogService.registrarAcesso, SearchControllers.getAnunciosCollections)
 routes.get('/search', LogService.registrarAcesso, SearchControllers.getAnunciosByFiltros)
 routes.get('/search/:palavras', LogService.registrarAcesso, SearchControllers.getAnunciosByPalavrasBuscadas)
+routes.get('/relatorio/download', TokenService.validateToken, LogService.registrarAcesso, RelatorioController.getExcel)
+routes.get('/relatorio', TokenService.validateToken, LogService.registrarAcesso, RelatorioController.getJson)
 
 module.exports = routes;
