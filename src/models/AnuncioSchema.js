@@ -39,9 +39,15 @@ const AnuncioSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  primeiraVisita: {
+    type: Date,
+  },
   numContatos: {
     type: Number,
     required: true
+  },
+  primeiroContato: {
+    type: Date,
   },
   urlImage: {
     type: String,
