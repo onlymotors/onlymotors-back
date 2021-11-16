@@ -129,9 +129,15 @@ module.exports = {
   async registrarContatos(request, response) {
     const { anuncioId } = request.params;
     if (request.body.contagem) {
-      request.body.numContatos = request.body.contagem
-      await Anuncio.findByIdAndUpdate(anuncioId, request.body)
-        .then(() => {
+      // request.body.numContatos = request.body.contagem
+      await Anuncio.findById(anuncioId, request.body)
+        .then(anuncio => {
+          if (anuncio.numContatos === 0) {
+            anuncio.primeiroContato = Date.now()
+          }
+          anuncio.numContatos = request.body.contagem
+          console.log(anuncio)
+          anuncio.save()
           return response.json({ message: `Visita registrada com sucesso!` });
         })
         .catch(e => {
@@ -147,9 +153,15 @@ module.exports = {
   async registrarVisitas(request, response) {
     const { anuncioId } = request.params;
     if (request.body.contagem) {
-      request.body.numVisitas = request.body.contagem
-      await Anuncio.findByIdAndUpdate(anuncioId, request.body)
-        .then(() => {
+      // request.body.numVisitas = request.body.contagem
+      await Anuncio.findById(anuncioId)
+        .then(anuncio => {
+          if (anuncio.numVisitas === 0) {
+            anuncio.primeiraVisita = Date.now()
+          }
+          anuncio.numVisitas = request.body.contagem
+          console.log(anuncio)
+          anuncio.save()
           return response.json({ message: `Visita registrada com sucesso!` });
         })
         .catch(e => {
