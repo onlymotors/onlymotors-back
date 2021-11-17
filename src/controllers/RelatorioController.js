@@ -3,6 +3,9 @@ const moment = require("moment");
 const Anuncio = require('../models/AnuncioSchema');
 const ChatRoom = require('../models/ChatRoomSchema');
 
+/**
+ * gera lista com dados sobre todos os anúncios
+ */
 const generateRelatorio = async (id) => {
   let relatorio = [];
   let rooms = await ChatRoom.find()
@@ -40,7 +43,7 @@ const generateRelatorio = async (id) => {
           if (primeiraVisita < 1) {
             primeiraVisita = 0
           } else if (isNaN(primeiraVisita)) {
-            primeiraVisita = "Nunca Visitado"
+            primeiraVisita = "Nunca visitado"
           } else {
             primeiraVisita = primeiraVisita
           }
@@ -49,12 +52,13 @@ const generateRelatorio = async (id) => {
           if (primeiroContato < 1) {
             primeiroContato = 0
           } else if (isNaN(primeiroContato)) {
-            primeiroContato = "Nunca Contatado"
+            primeiroContato = "Nunca contatado"
           } else {
             primeiroContato = primeiroContato
           }
 
           relatorio.push({
+            id: anu._id,
             rank: anu.rank,
             nome: anu.veiculoMarca + " " + anu.descricaoVeiculo + " " + anu.anoModelo,
             dataPublicacao: anu.dataPublicacao,
@@ -76,6 +80,9 @@ const generateRelatorio = async (id) => {
 
 module.exports = {
 
+  /**
+   * retorna relatório em arquivo excel
+   */
   async getExcel(request, response) {
 
     try {
@@ -122,6 +129,9 @@ module.exports = {
     }
   },
 
+  /**
+   * retorna relatório em Json
+   */
   async getJson(request, response) {
     try {
       const { userId } = request;
