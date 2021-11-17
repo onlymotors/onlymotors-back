@@ -1,6 +1,5 @@
 const Log = require('../models/LogSchema');
 
-
 module.exports = {
 
   async registrarAcesso(request, response, next) {

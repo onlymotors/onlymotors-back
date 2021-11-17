@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-//Modelo Doc ANUNCIANTE
 const AnuncioSchema = new mongoose.Schema({
   nomeFabricante: {
     type: String,
@@ -59,5 +58,5 @@ const AnuncioSchema = new mongoose.Schema({
     type: Date
   }
 });
-//Exportando Modulo
+
 module.exports = mongoose.model('Anuncio', AnuncioSchema);

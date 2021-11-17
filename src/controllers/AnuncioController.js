@@ -5,7 +5,9 @@ const { firestore } = require('firebase-admin');
 
 module.exports = {
 
-  //função para ler o arquivo csv e salvar no Banco
+  /**
+   * registra dados de anúncios a partir de um arquivo csv
+   */
   async store(request, response) {
     try {
       const { file } = request;
@@ -66,6 +68,9 @@ module.exports = {
     }
   },
 
+  /**
+   * atualiza dados do anúncio
+   */
   async update(request, response) {
     let chavesPermitidas = ["nomeFabricante", "veiculoMarca", "descricaoVeiculo", "anoFabricacao",
       "anoModelo", "veiculoValor", "statusAnuncio", "urlImage", "deletarFoto"]
@@ -93,7 +98,7 @@ module.exports = {
         dataAlteracao: request.body.dataAlteracao
       }
       await Anuncio.updateOne({ _id: anuncioId }, { dados, $unset: { urlImage: 1 } })
-        .then((res) => {
+        .then(() => {
           return response.json({ message: `A foto foi deletada com sucesso!` });
         })
         .catch(e => {
@@ -126,17 +131,19 @@ module.exports = {
     }
   },
 
+
+  /**
+   * registra contato com anunciante
+   */
   async registrarContatos(request, response) {
     const { anuncioId } = request.params;
     if (request.body.contagem) {
-      // request.body.numContatos = request.body.contagem
       await Anuncio.findById(anuncioId, request.body)
         .then(anuncio => {
           if (anuncio.numContatos === 0) {
             anuncio.primeiroContato = Date.now()
           }
           anuncio.numContatos = request.body.contagem
-          // console.log(anuncio)
           anuncio.save()
           return response.json({ message: `Visita registrada com sucesso!` });
         })
@@ -150,17 +157,18 @@ module.exports = {
     }
   },
 
+  /**
+   * registra visualizações do anúncio
+   */
   async registrarVisitas(request, response) {
     const { anuncioId } = request.params;
     if (request.body.contagem) {
-      // request.body.numVisitas = request.body.contagem
       await Anuncio.findById(anuncioId)
         .then(anuncio => {
           if (anuncio.numVisitas === 0) {
             anuncio.primeiraVisita = Date.now()
           }
           anuncio.numVisitas = request.body.contagem
-          // console.log(anuncio)
           anuncio.save()
           return response.json({ message: `Visita registrada com sucesso!` });
         })
@@ -174,6 +182,9 @@ module.exports = {
     }
   },
 
+  /**
+   * exclui o anúncio
+   */
   async delete(request, response) {
     const { anuncioId } = request.params;
     await Anuncio.deleteOne({ _id: anuncioId })

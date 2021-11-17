@@ -4,6 +4,9 @@ const CryptoService = require('../services/CryptoService');
 
 module.exports = {
 
+  /**
+   * autentica usuário
+   */
   async auth(request, response) {
     const { emailUser, senhaUser } = request.body;
     const user = await User.findOne({ emailUser }).select('+senhaUser');

@@ -1,8 +1,8 @@
 const Crypto = require('crypto')
 
-module.exports ={
+module.exports = {
 
-  gerarSenha() {  
+  gerarSenha() {
     return Crypto
       .randomBytes(10)
       .toString('base64')

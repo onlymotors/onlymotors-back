@@ -9,6 +9,9 @@ const CryptoService = require('../services/CryptoService');
 
 module.exports = {
 
+  /**
+   * registra dados de usuários a partir de um arquivo csv
+   */
   async store(request, response) {
     try {
       const { file } = request;
@@ -67,6 +70,9 @@ module.exports = {
     }
   },
 
+  /**
+   * atualiza dados do usuário
+   */
   async update(request, response) {
     let chavesPermitidas = ["telefoneUser", "enderecoUser", "senhaNova", "senhaAtual"]
     for (let property in request.body) {
@@ -122,6 +128,9 @@ module.exports = {
       })
   },
 
+  /**
+   * retorna dados de um usuário pelo seu id
+   */
   async getUserByUserId(request, response) {
     const { userId } = request;
     const user = await User.find({
@@ -165,6 +174,9 @@ module.exports = {
       });
   },
 
+  /**
+   * retorna todos os usuários (apenas para testes)
+   */
   async index(request, response) {
     await User.find().select('+senhaUser')
       .then((user) => {
@@ -176,6 +188,9 @@ module.exports = {
       })
   },
 
+  /**
+   * exclui um usuário e todos os seus anúncios
+   */
   async delete(request, response) {
     const { userId } = request;
     const anuncios = await Anuncio.deleteMany({ userId: userId })

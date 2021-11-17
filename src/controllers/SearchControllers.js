@@ -2,11 +2,11 @@ const Anuncio = require('../models/AnuncioSchema');
 const CryptoService = require('../services/CryptoService');
 
 module.exports = {
-  //função para retonar todos os anuncios
+
+  // retona todos os anúncios
   async getAnuncios(request, response) {
     try {
       const { pular, limitar, contar } = request.query
-      console.log(request.query)
       const anuncio = await Anuncio.find({ statusAnuncio: 1 }).select('-userId').limit(Number(limitar)).skip(Number(pular))
       if (!contar) {
         return response.json({ anuncio });
@@ -19,12 +19,12 @@ module.exports = {
       return response.send({ message: e.message })
     }
   },
-  //Retorna todos os anuncios de UM USUARIO
+
+  // retorna todos os anúncios de um usuário
   async getAnunciosByUserId(request, response) {
     try {
       const { userId } = request;
       const { pular, limitar, contar } = request.query
-      console.log(request.query)
       const anuncio = await Anuncio.find({
         userId: {
           $in: userId
@@ -48,7 +48,8 @@ module.exports = {
       return response.send({ message: e.message })
     }
   },
-  //Retorna anuncio pelo seu id
+
+  // retorna dados de um anúncio pelo seu id
   async getAnuncioByAnuncioId(request, response) {
     const { anuncioId } = request.params;
     const anuncio = await Anuncio.find({
@@ -69,6 +70,7 @@ module.exports = {
       });
   },
 
+  // retorna marcas e modelos existentes na base de dados
   async getAnunciosCollections(request, response) {
     try {
       let string = "R$ 16.000,00"
@@ -101,35 +103,14 @@ module.exports = {
     }
   },
 
+  // retorna todos os anúncios filtrados por marca, modelo, ano ou valor
   async getAnunciosByFiltros(request, response) {
     try {
       let { marca, modelo, ano, valorMinimo, valorMaximo, pular, limitar, contar } = request.query
-      console.log(request.query)
       contar = (contar === "true")
       ano = Number(ano)
       valorMinimo = Number(valorMinimo.replace(/\D/g, ""))
       valorMaximo = Number(valorMaximo.replace(/\D/g, ""))
-      // console.log(valorMinimo)
-      // console.log(valorMaximo)
-      // let listaPalavras = palavras.split(" ")
-      // let regex
-      // let queryPalavras
-      // if (listaPalavras.length > 1) {
-      // regex = listaPalavras.join("|")
-      // queryPalavras = {
-      //   $and: [
-      //     { veiculoMarca: { $regex: regex, $options: 'i' } },
-      //     { descricaoVeiculo: { $regex: regex, $options: 'i' } },
-      //   ]
-      // }
-      // } else {
-      // queryPalavras = {
-      //   $or: [
-      //     { veiculoMarca: { $regex: palavras, $options: 'i' } },
-      //     { descricaoVeiculo: { $regex: palavras, $options: 'i' } },
-      //   ]
-      // }
-      // }
       if (valorMaximo > 0) {
         valorMaximo = valorMaximo
       } else {
@@ -147,7 +128,6 @@ module.exports = {
               { anoModelo: ano },
               { veiculoValor: { $gte: valorMinimo, $lte: valorMaximo } },
               { statusAnuncio: 1 }
-              // { queryPalavras }
             ]
         }
       } else {
@@ -158,15 +138,11 @@ module.exports = {
               { descricaoVeiculo: { $regex: modelo, $options: 'i' } },
               { veiculoValor: { $gte: valorMinimo, $lte: valorMaximo } },
               { statusAnuncio: 1 }
-              // { queryPalavras }
             ]
         }
       }
-      // console.log(request.query)
-      // console.log(query)
       // let anuncios = await Anuncio.find({ $text: { $search: "Volkswagen Gol" } })
       let anuncios = await Anuncio.find(query).limit(Number(limitar)).skip(Number(pular))
-      // console.log("Res:", anuncios.length)
       if (!contar) {
         return response.json({ anuncio: anuncios });
       } else {
@@ -179,13 +155,12 @@ module.exports = {
     }
   },
 
+  // retorna todos os anúncios filtrados por palavras
   async getAnunciosByPalavrasBuscadas(request, response) {
     try {
       let { palavras } = request.params
       let { pular, limitar, contar } = request.query
-      console.log(request.query)
       contar = (contar === "true")
-      console.log(contar)
       let listaPalavras = palavras.split(" ")
       let regex
       let query
@@ -205,10 +180,7 @@ module.exports = {
           ]
         }
       }
-      // console.log(request.params)
-      // console.log(query)
       let anuncios = await Anuncio.find(query).limit(Number(limitar)).skip(Number(pular))
-      // console.log("Res:", anuncios.length)
       if (!contar) {
         return response.json({ anuncio: anuncios });
       } else {

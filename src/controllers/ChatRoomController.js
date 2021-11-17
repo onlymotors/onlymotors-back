@@ -12,10 +12,12 @@ const { getAnuncios } = require('./SearchControllers');
 
 module.exports = {
 
+  /**
+   * cria uma nova sala de chat
+   */
   async store(request, response) {
     try {
       const { userId } = request;
-      // const { anuncioId } = request.body;
 
       let anuncio = await Anuncio.findOne({ _id: request.body.anuncioId })
       let anuncioUserId = anuncio.userId._id.toString()
@@ -68,6 +70,9 @@ module.exports = {
     }
   },
 
+  /**
+   * retorna todas as salas de chat que o usuário ingressou
+   */
   async getChatRoomsByUserId(request, response) {
     try {
       const { userId } = request;
@@ -92,6 +97,9 @@ module.exports = {
     }
   },
 
+  /**
+   * retorna dados de uma sala de chat pelo seu id
+   */
   async getChatRoomByChatRoomId(request, response) {
     try {
       const { userId } = request;
@@ -113,6 +121,9 @@ module.exports = {
     }
   },
 
+  /**
+   * armazena mensagens de uma sala de chat
+   */
   async storeMensagens(request, response) {
     try {
       const { chatRoomId } = request.params;

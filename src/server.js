@@ -10,22 +10,26 @@ const ChatService = require('./services/ChatService');
 
 //Express usando JSON como comunicação 
 app.use(express.json());
+
+//Configuração para aceitar aninhados de objetos JSON
 app.use(express.urlencoded({ extended: true }));
+
+//Configuração de troca de recursos
 app.use(cors({
   origin: "*"
 }));
+
 //Usando o arquivo de rotas
 app.use(routes);
-//conectar ao banco de Dados
+
+//Conectar ao banco de Dados
 dbConnection;
 
 //Configuração específicas para o chat
-// const path = require('path');
 const server = require('http').createServer(app);
-// const io = require('socket.io')(server);
 ChatService(server);
 
-//doc swagger
+//Doc swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //Retorna imagens armazenadas
@@ -33,17 +37,6 @@ app.use('/images', express.static('./src/assets/images'));
 
 //Retornas download armazenados
 app.use('/download', express.static('./src/assets/download'));
-
-//Estático do chat
-// app.use(express.static(path.join(__dirname, 'public')));
-// app.set('views', path.join(__dirname, 'public'));
-// app.engine('html', require('ejs').renderFile);
-// app.set('view engine', 'html');
-
-//View do chat
-// app.use('/', (req, res) => {
-//   res.render('index.html')
-// });
 
 //Servidor ouvindo a porta 3333 ->  http://localhost:3333
 server.listen(3333, () => console.log('Servidor rodando na porta 3333'));
