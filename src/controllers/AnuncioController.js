@@ -138,11 +138,8 @@ module.exports = {
   async registrarContatos(request, response) {
     const { anuncioId } = request.params;
     if (request.body.contagem) {
-      await Anuncio.findById(anuncioId, request.body)
+      await Anuncio.findById(anuncioId)
         .then(anuncio => {
-          if (anuncio.numContatos === 0) {
-            anuncio.primeiroContato = Date.now()
-          }
           anuncio.numContatos = request.body.contagem
           anuncio.save()
           return response.json({ message: `Visita registrada com sucesso!` });

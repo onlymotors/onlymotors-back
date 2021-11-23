@@ -55,6 +55,9 @@ module.exports = {
           usuarioAnuncio.chatRooms.push(chatroom._id)
           usuarioAnuncio.save();
 
+          if (anuncio.numContatos === 0) {
+            anuncio.primeiroContato = Date.now()
+          }
           anuncio.numContatos = anuncio.numContatos + 1
           anuncio.save();
 
