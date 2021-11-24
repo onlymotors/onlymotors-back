@@ -1,0 +1,6 @@
+FROM node:16
+WORKDIR /onlymotors-back/
+
+COPY . .
+
+CMD npm start

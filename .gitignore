@@ -8,3 +8,4 @@
 .dockerignore
 docker-compose.yml
 Dockerfile
+.idea
