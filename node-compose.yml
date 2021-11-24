@@ -1,0 +1,10 @@
+version: '3.3'
+services:
+    node-image:
+        ports:
+            - '3333:3333'
+        environment:
+            DATABASE_URL: mongodb://mongo-compose-container.inetonlymotors:27017/onlyCar
+        network_mode: inetonlymotors
+        container_name: node-compose-container
+        image: node-image

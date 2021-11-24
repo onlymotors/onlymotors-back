@@ -1,0 +1,11 @@
+version: '3.3'
+services:
+    onlymotorsdb:
+        ports:
+            - '27017:27017'
+        volumes:
+            - './mongodb:/data/db'
+        network_mode: inetonlymotors 
+        container_name: mongo-compose-container
+        image: mongo-image
+
