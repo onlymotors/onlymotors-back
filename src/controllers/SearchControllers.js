@@ -6,7 +6,8 @@ module.exports = {
   // retona todos os anúncios
   async getAnuncios(request, response) {
     try {
-      const { pular, limitar, contar } = request.query
+      let { pular, limitar, contar } = request.query
+      contar = (contar === "true")
       const anuncio = await Anuncio.find({ statusAnuncio: 1 }).select('-userId').limit(Number(limitar)).skip(Number(pular))
       if (!contar) {
         return response.json({ anuncio });
@@ -24,7 +25,8 @@ module.exports = {
   async getAnunciosByUserId(request, response) {
     try {
       const { userId } = request;
-      const { pular, limitar, contar } = request.query
+      let { pular, limitar, contar } = request.query
+      contar = (contar === "true")
       const anuncio = await Anuncio.find({
         userId: {
           $in: userId
