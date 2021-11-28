@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongodb');
 const Anuncio = require('../models/AnuncioSchema');
 const CryptoService = require('../services/CryptoService');
 
@@ -12,7 +13,14 @@ module.exports = {
       if (!contar) {
         return response.json({ anuncio });
       } else {
-        const numAnuncios = await Anuncio.countDocuments({ statusAnuncio: 1 })
+        // const numAnuncios = await Anuncio.countDocuments({ statusAnuncio: 1 })
+        // const numAnuncios = await Anuncio.aggregate(
+        //   [
+        //     { $match: { statusAnuncio: 1 } },
+        //     { $count: "anunciosPublicadosCount" }
+        //   ]
+        // )
+        const numAnuncios = await Anuncio.estimatedDocumentCount()
         return response.json({ anuncio, numAnuncios });
       }
     } catch (e) {
@@ -38,11 +46,22 @@ module.exports = {
       } else if (!contar) {
         return response.json({ anuncio });
       } else {
-        const numAnuncios = await Anuncio.countDocuments({
-          userId: {
-            $in: userId
-          }
-        })
+        // const numAnuncios = await Anuncio.countDocuments({
+        //   userId: {
+        //     $in: userId
+        //   }
+        // })
+        // const numAnuncios = await Anuncio.aggregate(
+        //   [
+        //     {
+        //       $match: {
+        //         userId: ObjectId(userId)
+        //       }
+        //     },
+        //     { $count: "anunciosUserIdCount" }
+        //   ]
+        // )
+        const numAnuncios = await Anuncio.estimatedDocumentCount()
         return response.json({ anuncio, numAnuncios });
       }
     } catch (e) {
@@ -75,8 +94,6 @@ module.exports = {
   // retorna marcas e modelos existentes na base de dados
   async getAnunciosCollections(request, response) {
     try {
-      let string = "R$ 16.000,00"
-      string = string.replace(".", "").replace(",", ".").replace(/[^\d.-]/g, "")
       let marcas = await Anuncio.collection.distinct("veiculoMarca");
       let modelos = await Anuncio.collection.distinct("descricaoVeiculo");
       let colecao = await Anuncio.aggregate(
@@ -148,7 +165,8 @@ module.exports = {
       if (!contar) {
         return response.json({ anuncio: anuncios });
       } else {
-        let numAnuncios = await Anuncio.countDocuments(query)
+        // let numAnuncios = await Anuncio.countDocuments(query)
+        let numAnuncios = await Anuncio.estimatedDocumentCount()
         return response.json({ anuncio: anuncios, numAnuncios });
       }
     } catch (e) {
@@ -186,7 +204,8 @@ module.exports = {
       if (!contar) {
         return response.json({ anuncio: anuncios });
       } else {
-        let numAnuncios = await Anuncio.countDocuments(query)
+        // let numAnuncios = await Anuncio.countDocuments(query)
+        let numAnuncios = await Anuncio.estimatedDocumentCount()
         return response.json({ anuncio: anuncios, numAnuncios });
       }
     } catch (e) {
