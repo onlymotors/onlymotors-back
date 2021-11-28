@@ -9,7 +9,7 @@ const ChatRoom = require('../models/ChatRoomSchema');
 const generateRelatorio = async (id) => {
   let relatorio = [];
   let rooms = await ChatRoom.find()
-  await Anuncio.find()
+  await Anuncio.find({ userId: id })
     .then((anuncios) => {
       anuncios = anuncios.sort(function (a, b) {
         return b.numVisitas - a.numVisitas;
