@@ -20,8 +20,17 @@ module.exports = {
     }
     user.senha = undefined;
 
+    const termo = process.env.TERMO
+    const privacidade = process.env.PRIVACIDADE
+    let termosAceitos;
+    if (!user.termos.includes(termo) || !user.termos.includes(privacidade))
+      termosAceitos = false
+    else
+      termosAceitos = true
+
     response.send({
       statusCadastro: user.statusCadastro,
+      termosAceitos: termosAceitos,
       dataCadastro: user.dataCadastro.toLocaleString(),
       token: TokenService.generateToken({ userId: user.id })
     });

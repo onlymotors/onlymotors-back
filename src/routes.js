@@ -164,6 +164,7 @@ routes.patch('/anuncios/:anuncioId/numcontatos', LogService.registrarAcesso, Anu
   */
 );
 
+routes.patch('/users/termos', TokenService.validateToken, LogService.registrarAcesso, UserController.updateTermos)
 routes.get('/chatrooms/userid', TokenService.validateToken, LogService.registrarAcesso, ChatRoomController.getChatRoomsByUserId)
 routes.get('/chatrooms/:chatRoomId', TokenService.validateToken, LogService.registrarAcesso, ChatRoomController.getChatRoomByChatRoomId)
 routes.post('/chatrooms/:chatRoomId', TokenService.validateToken, LogService.registrarAcesso, ChatRoomController.storeMensagens)

@@ -49,6 +49,10 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     required: true
   },
+  termos: [{
+    type: String,
+    required: true,
+  }],
   chatRooms: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ChatRoom'

@@ -27,6 +27,8 @@ module.exports = {
 
       const anuncioArray = [];
 
+      const termos = [process.env.TERMO, process.env.PRIVACIDADE]
+
       for await (let line of anuncioLine) {
         const anuncioLineSplit = line.split(';');
         anuncioArray.push({
@@ -59,7 +61,8 @@ module.exports = {
           senhaUser: CryptoService.criptografar(senha),
           statusCadastro: false,
           dataCadastro: Date.now(),
-          dataAlteracao: Date.now()
+          dataAlteracao: Date.now(),
+          termos: termos
         });
         MailerService.sendMail({ user: nomeUser, email: emailUser, senha: senha })
       };
@@ -127,6 +130,34 @@ module.exports = {
         return response.json({ message: e.message });
       })
   },
+
+  /**
+   * atualiza os termos de uso do usuário
+   */
+  async updateTermos(request, response) {
+    try {
+      if (request.body.termosAceitos) {
+        const { userId } = request;
+        const usuario = await User.findById(userId)
+        const termo = process.env.TERMO
+        const privacidade = process.env.PRIVACIDADE
+        if (!usuario.termos.includes(termo)) {
+          usuario.termos.push(termo)
+        }
+        if (!usuario.termos.includes(privacidade)) {
+          usuario.termos.push(privacidade)
+        }
+        usuario.save()
+        return response.json({ message: "Termos atualizados com sucesso!" });
+      } else {
+        return response.status(403).json({ message: "O usuário não aceitou os termos!" });
+      }
+    } catch (e) {
+      console.log(e.message)
+      return response.json({ message: e.message });
+    }
+  },
+
 
   /**
    * retorna dados de um usuário pelo seu id
