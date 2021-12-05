@@ -1,17 +1,27 @@
 const nodemailer = require('nodemailer');
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GOOGLE_USER,
-    pass: process.env.GOOGLE_PASSWORD
-  }
-})
-
+const { google } = require('googleapis');
+const OAuth2 = google.auth.OAuth2
+const OAuth2_client = new OAuth2(process.env.GOOGLE_CLI_ID, process.env.GOOGLE_CLI_SECRET)
+OAuth2_client.setCredentials({ refresh_token: process.env.GOOGLE_REFRESH_TOKEN })
 
 module.exports = {
 
   async sendMail({ user, email, senha }) {
+
+    const accessToken = OAuth2_client.getAccessToken()
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        type: 'OAuth2',
+        user: process.env.GOOGLE_USER,
+        clientId: process.env.GOOGLE_CLI_ID,
+        clientSecret: process.env.GOOGLE_CLI_SECRET,
+        refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+        accessToken: accessToken
+      }
+    })
+
     let message = {
       from: process.env.GOOGLE_USER,
       to: email,
@@ -28,7 +38,17 @@ module.exports = {
         <p>Equipe OnlyMotors</p>
       `
     }
-    await transporter.sendMail(message)
+
+    transporter.sendMail(message, function (error, result) {
+      if (error) {
+        console.log('Error: ', error)
+      } else {
+        console.log('Success: ', result)
+      }
+    })
+
+    transporter.close()
+
   }
 
 }
